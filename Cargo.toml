@@ -5,14 +5,6 @@ authors = ["Samuele Maci <macisamuele@gmail.com>"]
 publish = false
 build = "rust/src/build.rs"
 
-[dependencies]
-chrono = "*"
-#pyo3-built = {git = "https://github.com/PyO3/pyo3-built"}
-
-[dependencies.pyo3]
-version = "*"
-features = ["extension-module"]
-
 [lib]
 path = "rust/src/lib.rs"
 name = "rust_swagger_validator"
@@ -20,3 +12,10 @@ crate-type = ["rlib", "cdylib"]
 
 [build-dependencies]
 built = "^0.3"
+
+[dependencies]
+chrono = "*"
+
+[dependencies.pyo3]
+version = "*"
+features = ["extension-module"]

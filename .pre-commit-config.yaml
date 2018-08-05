@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  sha: v1.3.0
+  rev: v1.3.0
   hooks:
   - id: check-merge-conflict
   - id: trailing-whitespace
@@ -21,20 +21,23 @@ repos:
   - id: check-byte-order-marker
   - id: requirements-txt-fixer
 - repo: https://github.com/asottile/reorder_python_imports
-  sha: v0.3.5
+  rev: v0.3.5
   hooks:
   - id: reorder-python-imports
 - repo: https://github.com/asottile/pyupgrade
-  sha: v1.2.0
+  rev: v1.2.0
   hooks:
   - id: pyupgrade
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-  rev: v1.1.0
+  rev: 0eb66ec09c1089c84c92c22cbca6aa2b6edbe287
   hooks:
   - id: pretty-format-rust
     args: [--autofix]
   - id: pretty-format-yaml
     args: [--autofix, --indent, '2']
+  - id: pretty-format-ini
+    args: [--autofix]
+    files: ^.+\.(ini|toml)$
 - repo: local
   hooks:
   - id: mypy
