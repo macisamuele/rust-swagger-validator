@@ -1,0 +1,71 @@
+language: python
+matrix:
+  include:
+  - python: '3.6'
+    env: TOXENV=pre-commit
+  - python: '3.6'
+    env: TOXENV=coverage
+  - python: '2.7'
+    env: TOXENV=py27
+  - python: '3.5'
+    env: TOXENV=py35
+  - python: '3.6'
+    env: TOXENV=py36
+  - python: '3.7'
+    env: TOXENV=py37
+    sudo: required
+  - python: '2.7'
+    # It's not clear but seems that on python2 cargo test fails
+    # NOTE: the library should be working as python tests already
+    # check for it. It has to be addressed before official release
+    env: TOXENV=cargo_test ALLOW_FAILURE=true
+  - python: '3.5'
+    env: TOXENV=cargo_test
+  - python: '3.6'
+    env: TOXENV=cargo_test
+  allow_failures:
+  - env: TOXENV=cargo_test ALLOW_FAILURE=true
+  fast_finish: true
+
+before_install:
+# Initialize rust only if it is not already present (handle the case in which cache is empty)
+- if [ ! -d ${HOME}/.cargo/bin/ ]; then curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --verbose -y; fi
+# Install rustfmt-preview component only if it is not alraedy installed (handle the case in which cache is empty)
+- if ! ${HOME}/.cargo/bin/rustup component list | grep -Eq '^rustfmt-preview[^ ]* +\(installed\)$'; then ${HOME}/.cargo/bin/rustup component add rustfmt-preview --toolchain nightly; fi
+- export PATH=${HOME}/.cargo/bin:${PATH}
+
+install: pip install codecov tox-pip-extensions
+script:
+- tox
+
+after_success:
+- if [ "$TOXENV" == "coverage" ]; then codecov; fi
+
+dist: xenial
+sudo: false
+
+before_cache:
+# Delete artifacts of this specific library. This allows to reduce the amount of differences for the cache
+# NOTE: this means that rust_swagger_validator will be built everytime but we gain on not building all the dependencies
+- find ${TRAVIS_BUILD_DIR}/target/*/*rust_swagger* | xargs rm -rfv
+- find ${TRAVIS_BUILD_DIR}/target/*/*/*rust_swagger* | xargs rm -rfv
+- find ${TRAVIS_BUILD_DIR}/target/*/.fingerprint/*rust_swagger* | xargs rm -rfv
+# Remove build_script informations
+- find ${TRAVIS_BUILD_DIR}/target/*/build_script_build* | xargs rm -rfv
+- find ${TRAVIS_BUILD_DIR}/target/*/*/build_script_build* | xargs rm -rfv
+# Delete empty directories (reduce probability of difference in cache)
+- find ${TRAVIS_BUILD_DIR}/target -depth -type d -empty -exec rm -rfv {} \;
+
+cache:
+  directories:
+  - ${HOME}/.cache/pip-faster
+  - ${HOME}/.cache/pre-commit
+  - ${HOME}/.cargo/
+  - ${HOME}/.rustup/
+  - ${TRAVIS_BUILD_DIR}/target
+
+notifications:
+  email: false
+  slack:
+    # Personal Slack notification
+    secure: n2hl9R7lleh8S7TYVzgq5IFI1NTVV84DcCraDTF8UZR3vSRzIgbnXx1KxXzJdcC5oyCdo3m0T7iyr/L46jZnWP9fEGxYEiK9cTDquSy5huTy92M9xPcqvXVny2OJhbX9B667/HS4o34HvixaAGv3/Y0iKWgvpT9esX8vH6Uh05IE7YrXZPQnteuhOSdXelYUtqz+5H1r36YVzrNWAaXKOclYxURLKr5rp0Nil+rIiKFM5AJfStYb/xrIrog8uSCi12uUgKw43d0GCTCRytjiMIt2gOBOMgcDc9j9nEEQcPuOWemj+fg6IVCtT4jrjLqSiLegzGCZsyyzeJUHCbi6YJUDNelWKmD8F13AufXciCbJMZCrXIPS7/XX8iKIaYBP3/Z0Bfw0Rtyu0fYb+VhwF6FDMwpp9NKARhBMauANnaEzVGuspV6s4cyRyQSnj55UELiGqgr2+REg/eKRm4cWT1Lnc+SidjsA7S/pBWCpusNea5j1l69As5pAdCnKFHH3Jbt5KadY5qGYxlb2t/iYHofI/0pp57J97wmooKVOk533djtuFF7iqemNM7dHUuVE0xW0ug1fCgbmMQoE6QePtLfO4MnsHsc0hLsZYm2Gl7iMdExTWShZfmdrGFkRr79L5xuEV2nM1JZYa0Pi5ue18YUuk5nwnH3LINR/FNXr0bo=

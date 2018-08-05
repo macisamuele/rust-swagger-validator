@@ -12,7 +12,7 @@ ifndef EDITOR
 	endif
 endif
 
-venv: requirements-dev.txt setup.py ${PYTHON_MODULE_ROOT}/__init__.py
+venv: requirements-dev.txt setup.cfg setup.py ${PYTHON_MODULE_ROOT}/__init__.py
 	-deactivate
 	rm -rf venv/  # Ensure that venv does not exist
 	tox -e venv
