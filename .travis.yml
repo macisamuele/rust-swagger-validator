@@ -44,6 +44,18 @@ after_success:
 dist: xenial
 sudo: false
 
+before_cache:
+# Delete artifacts of this specific library. This allows to reduce the amount of differences for the cache
+# NOTE: this means that rust_swagger_validator will be built everytime but we gain on not building all the dependencies
+- find ${TRAVIS_BUILD_DIR}/target/*/*rust_swagger* | xargs rm -rfv
+- find ${TRAVIS_BUILD_DIR}/target/*/*/*rust_swagger* | xargs rm -rfv
+- find ${TRAVIS_BUILD_DIR}/target/*/.fingerprint/*rust_swagger* | xargs rm -rfv
+# Remove build_script informations
+- find ${TRAVIS_BUILD_DIR}/target/*/build_script_build* | xargs rm -rfv
+- find ${TRAVIS_BUILD_DIR}/target/*/*/build_script_build* | xargs rm -rfv
+# Delete empty directories (reduce probability of difference in cache)
+- find ${TRAVIS_BUILD_DIR}/target -depth -type d -empty -exec rm -rfv {} \;
+
 cache:
   directories:
   - ${HOME}/.cache/pip-faster
