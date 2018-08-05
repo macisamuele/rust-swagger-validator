@@ -15,7 +15,7 @@ endif
 venv: requirements-dev.txt setup.py ${PYTHON_MODULE_ROOT}/__init__.py
 	-deactivate
 	rm -rf venv/  # Ensure that venv does not exist
-	@false
+	tox -e venv
 
 .PHONY: development
 development: venv
@@ -23,7 +23,7 @@ development: venv
 
 .PHONY: test
 test:
-	@false
+	tox
 
 .PHONY: clean
 clean:
