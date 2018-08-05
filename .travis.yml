@@ -1,0 +1,48 @@
+language: python
+matrix:
+  include:
+  - python: '3.6'
+    env: TOXENV=pre-commit
+  - python: '3.6'
+    env: TOXENV=coverage
+  - python: '2.7'
+    env: TOXENV=py27
+  - python: '3.5'
+    env: TOXENV=py35
+  - python: '3.6'
+    env: TOXENV=py36
+  - python: '3.7'
+    env: TOXENV=py37
+    sudo: required
+
+before_install:
+# Initialize rust only if it is not already present (handle the case in which cache is empty)
+- if [ ! -d ${HOME}/.cargo/bin/ ]; then curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --verbose -y; fi
+# Install rustfmt-preview component only if it is not alraedy installed (handle the case in which cache is empty)
+- if ! ${HOME}/.cargo/bin/rustup component list | grep -Eq '^rustfmt-preview[^ ]* +\(installed\)$'; then ${HOME}/.cargo/bin/rustup component add rustfmt-preview --toolchain nightly; fi
+- export PATH=${HOME}/.cargo/bin:${PATH}
+
+install: pip install codecov tox-pip-extensions
+script:
+- tox
+
+after_success:
+- if [ "$TOXENV" == "coverage" ]; then codecov; fi
+
+dist: xenial
+sudo: false
+
+cache:
+  directories:
+  - ${HOME}/.cache/pip-faster
+  - ${HOME}/.cache/pre-commit
+  - ${HOME}/.cargo/
+  - ${HOME}/.rustup/
+  - ${TRAVIS_BUILD_DIR}/target
+
+
+notifications:
+  email: false
+  slack:
+    # Personal Slack notification
+    secure: N4SeKE16m4R7fejlxzCwUaPQLh6c/4PhVq02QAe9ejZ0B8YFmMwUcTnPYi1gLDk0TtlOWf3g+dqHLRY1J27HkVqGu0V+0BA+al1rJMu04PVCbVf2noFydbvlGzvb314PmfztA2VpI2p/gchZbSuaURL5a+H9vvYehQjxrld2Ull5OE5vb7zwbPWzBvTFo7R/Q0VTEx8aPUnXnEXFe87y4t2wg465x19MjllRCA0N4teZli3cVfT2fmLN4qfFSUfvPYfQLfjWuz2wc+vyAikSyvSpsLHco0AQtxMpWTjdDXHqwkg1/iQWCE8YuxS/1Qf+mLWONR0+CcP4cJzF4NaohykYkCeJ1EARxIvdUBSlzkMmgeYwfVf0U4MUkb8+9xZgYkBR6NgRNvTvYMjG6AI2b0tgPub2QIt8sk0Mll+3IIw6+h+h/MdHVe/J2b+OycLkfWd3ixrhtEz43HAjeY/A9rfKQ2XR5f7SHk8Jtg7nFez+G5xCrluHdISJs+fbzCyPsSOzWen3w1V5UEwdtoRPbVSz0LJCs08ukQ4GPTPvCwQaPRnWK0V6408LSmlKQuDO3EWDrW7S/qnMmjKmdYbLpvB0xYOOzRv8VUOdKudGMIDDP1h9MrYahGwVfLuOeL9Wjlnpufy51u2B6g2y5mzT5T+fUgxDPt6AQS5qSyYoL1E=
