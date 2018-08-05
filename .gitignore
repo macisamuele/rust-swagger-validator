@@ -1,0 +1,16 @@
+!/.idea/runConfigurations
+**/*.rs.bk
+*.egg-info/
+*.pyc
+*.so
+.coverage
+.eggs/
+.mypy_cache/
+.pytest_cache/
+.tox/
+/.idea
+/Cargo.lock
+/build/
+/dist/
+/target
+/venv/
