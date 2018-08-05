@@ -37,7 +37,7 @@ repos:
     args: [--autofix, --indent, '2']
   - id: pretty-format-ini
     args: [--autofix]
-    files: ^.+\.(ini|toml)$
+    files: ^(.coveragerc|.+\.(ini|toml))$
 - repo: local
   hooks:
   - id: mypy
