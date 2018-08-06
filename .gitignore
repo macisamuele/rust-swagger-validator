@@ -1,14 +1,15 @@
-!/.idea/runConfigurations
 **/*.rs.bk
 *.egg-info/
 *.pyc
 *.so
+*.pyd
 .coverage
 .eggs/
 .mypy_cache/
 .pytest_cache/
 .tox/
-/.idea
+/.idea/modules.xml
+/.idea/workspace.xml
 /Cargo.lock
 /build/
 /dist/
