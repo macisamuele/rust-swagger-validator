@@ -112,9 +112,10 @@ install:
 - pip install codecov tox-pip-extensions
 
 before_script:
+# Print versions of the interesting tools
 - rustc --version --verbose
 - cargo --version --verbose
-- python --version
+- python -c "import sys;print(sys.version)"
 - pip --version
 - tox --version
 
