@@ -1,4 +1,3 @@
-.
 coverage
 mock
 mypy == 0.620; python_version >= '3.4'  # keep it in sync with .pre-commit-config.yaml
