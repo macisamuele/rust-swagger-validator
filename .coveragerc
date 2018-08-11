@@ -12,5 +12,4 @@ show_missing = True
 skip_covered = True
 
 [run]
-source =
-	python/rust_swagger_validator/
+source = rust_swagger_validator
