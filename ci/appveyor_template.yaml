@@ -23,7 +23,7 @@ build: off
 
 install:
 # TODO: do some caching optimization, for now let's make sure that works
-- cmd: appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe && rustup-init --default-toolchain nightly --verbose -y
+- cmd: IF NOT EXIST %USERPROFILE%\.cargo ( appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe && rustup-init --default-toolchain nightly --verbose -y )
 - cmd: SET PATH=%USERPROFILE%\.cargo\bin;%PYTHON%;%PYTHON%\Scripts;%PATH%
 - cmd: SET RUST_BACKTRACE=1  # Rust build are verbose
 - cmd: SET PYTHONUNBUFFERED=1  # disable python buffering, output come as it is generated
@@ -45,15 +45,13 @@ before_test:
 - cmd: tox --version
 
 test_script:
-- cmd: tox -v -e py
-
+- cmd: tox
 # after_test:
 # - if [ "$TOXENV" == "coverage" ]; then codecov; fi
 
 cache:
-- '%USERPROFILE%\.cache\pip'
-- '%USERPROFILE%\.cache\pip-faster'
-- '%USERPROFILE%\.cache\pre-commit'
+- '%USERPROFILE%\AppData\Local\pip\'
+- '%USERPROFILE%\AppData\Local\wheel'
 - '%USERPROFILE%\.cargo\'
 - '%USERPROFILE%\.rustup\'
 - '%APPVEYOR_BUILD_FOLDER%\target'
@@ -68,5 +66,6 @@ notifications:
 # Enable remote desktop debugging (https://www.appveyor.com/docs/how-to/rdp-to-build-worker/)
 init:
 - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-on_failure:
-- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+# Uncomment the lines below to allow debuggins via Remote desktop
+#on_failure:
+#- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
