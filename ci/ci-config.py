@@ -193,8 +193,11 @@ def generate_configs(config_path: str) -> None:
 
 
 def validate_config(config_path: str) -> None:
-    config = yaml.load(Path(config_path))
-    schema = yaml.load(Path(__file__).resolve().parent / 'config-schema.json')
+    # This is needed as jsonschema expects `dict` objects while the default type (rt) returns ordered dicts
+    yml = YAML(typ='safe')
+
+    config = yml.load(Path(config_path))
+    schema = yml.load(Path(__file__).resolve().parent / 'config-schema.json')
 
     jsonschema.validate(
         instance=config,

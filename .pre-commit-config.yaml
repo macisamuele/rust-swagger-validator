@@ -61,7 +61,7 @@ repos:
     entry: python
     args:
     - ci/ci-config.py
-    # - --validate  # This is ignored for now but has to be addressed
+    - --validate  # This is ignored for now but has to be addressed
     - --generate
     pass_filenames: false
     files: ^(ci/.*|\.travis\.yml|\.appveyor\.yml|\.circleci/config\.yaml)$
