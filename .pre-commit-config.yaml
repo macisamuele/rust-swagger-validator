@@ -28,7 +28,7 @@ repos:
   - id: reorder-python-imports
     language_version: python3.6
 - repo: https://github.com/asottile/pyupgrade
-  rev: v1.2.0
+  rev: v1.4.0
   hooks:
   - id: pyupgrade
     language_version: python3.6
@@ -53,3 +53,15 @@ repos:
     language_version: python3.6
     additional_dependencies: [mypy==0.620]  # don't forget to bump the version in requirements-dev.txt too!
     files: ^.+\.py$
+  - id: ci-configurations
+    name: ci-configurations
+    language: python
+    language_version: python3.6
+    additional_dependencies: [jsonschema>=2.6.0, ruamel.yaml]
+    entry: python
+    args:
+    - ci/ci-config.py
+    # - --validate  # This is ignored for now but has to be addressed
+    - --generate
+    pass_filenames: false
+    files: ^(ci/.*|\.travis\.yml|\.appveyor\.yml|\.circleci/config\.yaml)$

@@ -1,0 +1,72 @@
+# Please make sure to only modify the template file and not the generated ones.
+# Check ${GIT_REPO_ROOT}/ci/gi-config.py too verify how the template is used.
+version: '{build}'
+image: Visual Studio 2017
+
+skip_commits:
+  message: /.*\[(skip ci|ci skip)\].*/  # ignore testing commit if the message contains "skip ci" info (defined same travis rules)
+
+clone_depth: 1  # Define clone depth to 1 in order to fetch only the desired commit and not all the git history
+
+platform: x64
+
+matrix:
+  allow_failures:
+  # Add ALLOW_FAILURE env variable to the matrix tasks that failures could be ignored
+  - ALLOW_FAILURE: 'true'
+
+# Available python versions and their locations on https://www.appveyor.com/docs/build-environment/#python
+environment:
+  ALLOW_FAILURE: 'false'
+
+build: off
+
+install:
+# TODO: do some caching optimization, for now let's make sure that works
+- cmd: appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe && rustup-init --default-toolchain nightly --verbose -y
+- cmd: SET PATH=%USERPROFILE%\.cargo\bin;%PYTHON%;%PYTHON%\Scripts;%PATH%
+- cmd: SET RUST_BACKTRACE=1  # Rust build are verbose
+- cmd: SET PYTHONUNBUFFERED=1  # disable python buffering, output come as it is generated
+# TODO: remove virtualenv install from personal repo once https://github.com/pypa/virtualenv/pull/1023 is merged
+- cmd: python -m pip install -U https://github.com/macisamuele/virtualenv/archive/maci-pr-1023-backport.zip
+- cmd: python -m pip install -U pip codecov tox
+
+before_test:
+# Enable 64-bits compiler
+- cmd: CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64   # build native x64 on x64 machines -> modify this to publish x86 wheels
+# - cmd: SET MSSdk=1
+# - cmd: set LIB=%PYTHON%\Lib;%LIB%
+# - cmd: SET TOX_TESTENV_PASSENV=DISTUTILS_USE_SDK MSSdk INCLUDE LIB RUST_BACKTRACE
+- cmd: rustc --version --verbose
+- cmd: cargo --version --verbose
+- cmd: python -c "import sys;print(sys.version)"
+- cmd: pip --version
+- cmd: tox --version
+
+test_script:
+- cmd: tox -v -e py
+- cmd: set
+
+# after_test:
+# - if [ "$TOXENV" == "coverage" ]; then codecov; fi
+
+cache:
+- '%USERPROFILE%\.cache\pip'
+- '%USERPROFILE%\.cache\pip-faster'
+- '%USERPROFILE%\.cache\pre-commit'
+- '%USERPROFILE%\.cargo\'
+- '%USERPROFILE%\.rustup\'
+- '%APPVEYOR_BUILD_FOLDER%\target'
+
+
+notifications:
+- provider: Slack
+  incoming_webhook:
+    # Personal Slack notification
+    secure: wN2af6BR8QTbUaIK7ytZx8kzVOEOUUIhvWP1IjVnAG8Wa3QYC1PaOzF1ro0vUerRPjE7kYtSHqJ2/v0kFIyJ2AETJcN1Z7oLsIX199EYANI=
+
+# Enable remote desktop debugging (https://www.appveyor.com/docs/how-to/rdp-to-build-worker/)
+init:
+- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+on_failure:
+- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
