@@ -70,9 +70,9 @@ test_script:
 cache:
 - '%USERPROFILE%\AppData\Local\pip\'
 - '%USERPROFILE%\AppData\Local\wheel'
-- '%USERPROFILE%\.cargo\'
-- '%USERPROFILE%\.rustup\'
-- '%APPVEYOR_BUILD_FOLDER%\target'
+- '%USERPROFILE%\.cargo\ -> Cargo.toml'
+- '%USERPROFILE%\.rustup\ -> Cargo.toml'
+- '%APPVEYOR_BUILD_FOLDER%\target -> Cargo.toml'
 
 
 notifications:
