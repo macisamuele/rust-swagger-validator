@@ -53,8 +53,8 @@ before_test:
 # Enable 64-bits compiler (code inspired from https://packaging.python.org/guides/supporting-windows-using-appveyor/#testing-with-tox)
 - cmd: CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64   # build native x64 on x64 machines -> modify this to publish x86 wheels
 - cmd: SET MSSdk=1
-- cmd: set LIB=%PYTHON%\Lib;%LIB%
-- cmd: SET TOX_TESTENV_PASSENV=DISTUTILS_USE_SDK MSSdk INCLUDE LIB RUST_BACKTRACE
+- cmd: SET LIB=%PYTHON%\Lib;%LIB%
+- cmd: SET TOX_TESTENV_PASSENV=INCLUDE LIB LIBPATH MSSDK PATH PATHEXT VISUALSTUDIOVERSION
 # Print versions of the interesting tools
 - cmd: rustc --version --verbose
 - cmd: cargo --version --verbose
