@@ -7,7 +7,9 @@ import sys
 from pkg_resources import parse_version
 
 
+# Constraints extracted from https://github.com/PyO3/pyo3/blob/master/build.rs#L14
 MIN_VERSION = '1.30.0-nightly'
+MIN_DATE = '2018-08-18'
 
 
 def run_command(command):
@@ -43,5 +45,11 @@ rustc_version = parse_version([
     if line.startswith('release:')
 ][0])
 
+rustc_date = [
+    line.replace('commit-date: ', '')
+    for line in rustc_version_output.splitlines()
+    if line.startswith('commit-date: ')
+][0]
 
-assert parse_version(MIN_VERSION) <= rustc_version, 'Min rustc requirement is not satisfied, please update cargo and rustc'
+assert parse_version(MIN_VERSION) <= rustc_version and MIN_DATE <= rustc_date, \
+    'Min rustc requirement is not satisfied, please update cargo and rustc'
