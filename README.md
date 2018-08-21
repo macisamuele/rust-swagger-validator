@@ -6,6 +6,7 @@
 
 [![Linux & Mac Build](https://img.shields.io/travis/com/macisamuele/rust-swagger-validator/master.svg?logo=travis&label=Linux+%26+Mac)](https://travis-ci.com/macisamuele/rust-swagger-validator)
 [![Windows Build](https://img.shields.io/appveyor/ci/macisamuele/rust-swagger-validator/master.svg?logo=appveyor&label=Windows)](https://ci.appveyor.com/project/macisamuele/rust-swagger-validator)
+[![Coverage](https://img.shields.io/codecov/c/github/macisamuele/rust-swagger-validator/master.svg)](https://codecov.io/gh/macisamuele/rust-swagger-validator)
 
 Rationale
 ---------
