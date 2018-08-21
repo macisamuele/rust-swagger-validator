@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "testing_environments": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "allowed_failure": {
+            "default": false,
+            "type": "boolean"
+          },
+          "env": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "minProperties": 1
+          },
+          "os": {
+            "items": {
+              "enum": [
+                "linux",
+                "osx",
+                "windows"
+              ],
+              "type": "string"
+            },
+            "minLength": 1,
+            "type": "array"
+          },
+          "python": {
+            "enum": [
+              "2.7",
+              "3.5",
+              "3.6",
+              "3.7"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "os",
+          "python"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "testing_environments"
+  ],
+  "type": "object"
+}
