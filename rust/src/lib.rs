@@ -9,6 +9,10 @@ fn convert_string(a: i64) -> String {
     format!("{}", a).to_string()
 }
 
+fn return_42() -> usize {
+    42
+}
+
 #[pymodinit]
 fn _rust_module(py: Python, m: &PyModule) -> PyResult<()> {
     m.add("__build__", pyo3_built!(py))?;
@@ -21,8 +25,24 @@ fn _rust_module(py: Python, m: &PyModule) -> PyResult<()> {
 
     #[pyfn(m, "no_parameters")]
     fn no_parameters() -> PyResult<usize> {
-        return Ok(42);
+        return Ok(return_42());
     }
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use convert_string;
+    use return_42;
+
+    #[test]
+    fn test_convert_string() {
+        assert_eq!(convert_string(1), "1");
+    }
+
+    #[test]
+    fn test_return_42() {
+        assert_eq!(return_42(), 42);
+    }
 }
