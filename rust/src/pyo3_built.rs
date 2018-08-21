@@ -21,6 +21,7 @@ macro_rules! pyo3_built {
         build.set_item("jobs", build::NUM_JOBS)?;
         build.set_item("pkg-version", build::PKG_VERSION)?;
         build.set_item("git-sha", build::GIT_VERSION)?;
+        build.set_item("ci-platform", build::CI_PLATFORM)?;
         info.set_item("build", build)?;
 
         // info time
