@@ -4,8 +4,8 @@
 ***This repository is meant as personal exercise for learning [Rust](https://www.rust-lang.org/) and python bindings via
 [PyO3](https://github.com/PyO3/pyo3).***
 
-![https://travis-ci.com/macisamuele/rust-swagger-validator](https://img.shields.io/travis/macisamuele/rust-swagger-validator/master.svg?logo=travis&label=Linux+%26+Mac)
-![https://ci.appveyor.com/project/macisamuele/rust-swagger-validator](https://img.shields.io/appveyor/ci/macisamuele/rust-swagger-validator/master.svg?logo=appveyor&label=Windows)
+[![Linux & Mac Build](https://img.shields.io/travis/macisamuele/rust-swagger-validator/master.svg?logo=travis&label=Linux+%26+Mac)](https://travis-ci.com/macisamuele/rust-swagger-validator)
+[![Windows Build](https://img.shields.io/appveyor/ci/macisamuele/rust-swagger-validator/master.svg?logo=appveyor&label=Windows)](https://ci.appveyor.com/project/macisamuele/rust-swagger-validator)
 
 Rationale
 ---------
