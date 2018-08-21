@@ -1,12 +1,8 @@
-#![feature(use_extern_macros)]
-
 #[macro_use]
 extern crate pyo3;
 
 use pyo3::prelude::*;
-//use pyo3::py::modinit;
 
-#[macro_use]
 mod pyo3_built;
 
 fn convert_string(a: i64) -> String {
