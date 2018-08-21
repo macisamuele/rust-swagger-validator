@@ -17,4 +17,5 @@
 /build/
 /dist/
 /target
+/temp-dir/
 /venv/
