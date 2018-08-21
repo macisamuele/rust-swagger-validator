@@ -34,6 +34,7 @@ repos:
     language_version: python3.6
     args:
     - --py36-plus
+    exclude: ^(ci/.*)$
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
   rev: 0eb66ec09c1089c84c92c22cbca6aa2b6edbe287
   hooks:
