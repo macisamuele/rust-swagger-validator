@@ -22,14 +22,17 @@ environment:
 build: off
 
 install:
-# TODO: do some caching optimization, for now let's make sure that works
-- cmd: IF NOT EXIST %USERPROFILE%\.cargo ( appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe && rustup-init --default-toolchain nightly --verbose -y )
-- cmd: SET PATH=%USERPROFILE%\.cargo\bin;%PYTHON%;%PYTHON%\Scripts;%PATH%
 - cmd: SET RUST_BACKTRACE=1  # Rust build are verbose
 - cmd: SET PYTHONUNBUFFERED=1  # disable python buffering, output come as it is generated
+- cmd: SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
 # TODO: remove virtualenv install from personal repo once https://github.com/pypa/virtualenv/pull/1023 is merged
 - cmd: python -m pip install -U https://github.com/macisamuele/virtualenv/archive/maci-pr-1023-backport.zip
 - cmd: python -m pip install -U pip codecov tox
+# Install rust dependencies
+- cmd: IF NOT EXIST %USERPROFILE%\.cargo ( appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe && rustup-init --default-toolchain nightly --verbose -y )
+# Update rust components if min requirements are not satisfied
+- cmd: python ci\min-rustc-installed.py || (%USERPROFILE%\.cargo\bin\rustup self update && %USERPROFILE%\.cargo\bin\rustup update)
+- cmd: SET PATH=%USERPROFILE%\.cargo\bin;%PATH%
 
 before_test:
 # Enable 64-bits compiler (code inspired from https://packaging.python.org/guides/supporting-windows-using-appveyor/#testing-with-tox)

@@ -36,6 +36,9 @@ install:
     source venv/bin/activate
     python --version
   fi
+- export RUST_BACKTRACE=1
+- export PYTHONUNBUFFERED=1
+- pip install codecov tox-pip-extensions
 - |
   # Initialize rust only if it is not already present
   # NOTE: as this is cached it could be possible that we'll not be testing with the latest toolchain
@@ -43,13 +46,17 @@ install:
     curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --verbose -y
   fi
 - |
+  # Update rust components if min requirements are not satisfied
+  if ! python ./ci/min-rustc-installed.py; then
+    ${HOME}/.cargo/bin/rustup self update
+    ${HOME}/.cargo/bin/rustup update
+  fi
+- |
   # Install rustfmt-preview component only if it is not alraedy installed (handle the case in which cache is empty)
   if ! ${HOME}/.cargo/bin/rustup component list | grep -Eq '^rustfmt-preview[^ ]* +\(installed\)$'; then
     ${HOME}/.cargo/bin/rustup component add rustfmt-preview --toolchain nightly
   fi
 - export PATH=${HOME}/.cargo/bin:${PATH}
-- export RUST_BACKTRACE=1
-- pip install codecov tox-pip-extensions
 
 before_script:
 # Print versions of the interesting tools
