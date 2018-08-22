@@ -70,14 +70,15 @@ script:
 - tox
 
 after_success:
-- if [ "$TOXENV" == "coverage" ]; then codecov; fi
+- if [ "$TOXENV" == "coverage" ]; then codecov --verbose; fi
 
 before_cache:
 # Delete artifacts of this specific library. This allows to reduce the amount of differences for the cache
 # NOTE: this means that rust_swagger_validator will be built every time but we gain on not building all the dependencies
-- find ${TRAVIS_BUILD_DIR}/target/*/*rust_swagger* | xargs rm -rfv
-- find ${TRAVIS_BUILD_DIR}/target/*/*/*rust_swagger* | xargs rm -rfv
-- find ${TRAVIS_BUILD_DIR}/target/*/.fingerprint/*rust_swagger* | xargs rm -rfv
+- find ${TRAVIS_BUILD_DIR}/target/*/*rust_swagger_validator* | xargs rm -rfv
+- find ${TRAVIS_BUILD_DIR}/target/*/*rust_swagger_validator* | xargs rm -rfv
+- find ${TRAVIS_BUILD_DIR}/target/*/*/*rust_swagger_validator* | xargs rm -rfv
+- find ${TRAVIS_BUILD_DIR}/target/*/.fingerprint/*rust_swagger_validator* | xargs rm -rfv
 # Remove build_script information
 - find ${TRAVIS_BUILD_DIR}/target/*/build_script_build* | xargs rm -rfv
 - find ${TRAVIS_BUILD_DIR}/target/*/*/build_script_build* | xargs rm -rfv
@@ -99,6 +100,7 @@ cache:
   - ${HOME}/.cargo/
   - ${HOME}/.rustup/
   - ${TRAVIS_BUILD_DIR}/target
+  - ${TRAVIS_BUILD_DIR}/kcov-v*
   # Caching of homebrew dependencies
   - ${HOME}/Library/Caches/Homebrew
   - /usr/local/Cellar/

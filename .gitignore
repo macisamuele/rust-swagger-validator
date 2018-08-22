@@ -12,10 +12,12 @@
 /.idea/workspace.xml
 /.mypy_cache/
 /.pytest_cache/
+/.rust_coverage/
 /.tox/
 /Cargo.lock
 /build/
 /dist/
+/kcov-v*/
 /target
 /temp-dir/
 /venv/
