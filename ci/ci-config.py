@@ -3,6 +3,7 @@ from collections import defaultdict
 from enum import Enum
 from pathlib import Path
 from sys import maxsize
+from typing import Any
 from typing import DefaultDict
 from typing import List
 from typing import Mapping
@@ -91,7 +92,7 @@ class CI(Enum):
         os: OS,
         env: MutableMapping[str, str],
         allow_failure: bool,
-    ) -> Mapping[str, str]:
+    ) -> Mapping[str, Any]:
         if os == OS.WINDOWS and 'TOXENV' in env:
             env['TOXENV'] = ','.join(
                 # This is needed on windows to overcome the issue of multiple installations
@@ -102,7 +103,7 @@ class CI(Enum):
                 for toxenv in env['TOXENV'].split(',')
             )
 
-        task = {}
+        task: MutableMapping[str, Any] = {}
         if self == CI.APPVEYOR:
             task['PYTHON'] = python_version.windows_path()
             task.update(env)
@@ -125,6 +126,23 @@ class CI(Enum):
 
             if allow_failure:
                 task['env'] = ' '.join([task['env'], 'ALLOW_FAILURE=true']).strip()
+
+            if env.get('TOXENV') == 'coverage' and os == OS.LINUX:
+                # Small hacks to get rust coverage running on travis -> https://github.com/codecov/example-rust
+                task['sudo'] = 'required'
+                task['addons'] = {
+                    'apt': {
+                        'packages': [
+                            'libcurl4-openssl-dev',
+                            'libelf-dev',
+                            'libdw-dev',
+                            'cmake',
+                            'gcc',
+                            'binutils-dev',
+                            'libiberty-dev',
+                        ],
+                    },
+                }
         else:
             raise RuntimeError('Unsupported CI')
         return task

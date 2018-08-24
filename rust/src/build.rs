@@ -1,7 +1,6 @@
 extern crate built;
 
 fn main() {
-    print!("fafa");
     let src = std::env::var("CARGO_MANIFEST_DIR").unwrap();
     let dst = std::path::Path::new(&std::env::var("OUT_DIR").unwrap()).join("built.rs");
     let mut opts = built::Options::default();
