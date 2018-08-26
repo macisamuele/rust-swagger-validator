@@ -5,7 +5,7 @@ use pyo3::prelude::*;
 
 #[macro_use]
 mod errors;
-mod loaders;
+pub mod loaders;
 mod pyo3_built;
 
 fn convert_string(a: i64) -> String {
