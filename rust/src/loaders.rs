@@ -314,4 +314,96 @@ mod tests {
     fn test_load_from_path_file_not_found() {
         panic_with_expected_loader_error!(load_from_path("test-data/no-file-found", None), IOError);
     }
+
+    #[test]
+    fn test_load_from_url_json_format_valid_json() {
+        let path_str = "test-data/json-files-loaders-tests/valid.json";
+        let absolute_path = path::Path::new(path_str).canonicalize().unwrap();
+        let url = format!("file://{}", absolute_path.to_str().unwrap());
+        let json_value = load_from_url(url.as_str(), Option::from(Format::JSON)).unwrap();
+
+        let json_string = json_value.get("key").unwrap();
+        assert_eq!(json_string.as_str().unwrap(), "value");
+    }
+
+    #[test]
+    fn test_load_from_url_yaml_format_valid_yaml() {
+        let path_str = "test-data/yaml-files-loaders-tests/valid.yaml";
+        let absolute_path = path::Path::new(path_str).canonicalize().unwrap();
+        let url = format!("file://{}", absolute_path.to_str().unwrap());
+        let json_value = load_from_url(url.as_str(), Option::from(Format::YAML)).unwrap();
+
+        let json_string = json_value.get("key").unwrap();
+        assert_eq!(json_string.as_str().unwrap(), "value");
+    }
+
+    #[test]
+    fn test_load_from_url_no_format_valid_json() {
+        let path_str = "test-data/json-files-loaders-tests/valid.json";
+        let absolute_path = path::Path::new(path_str).canonicalize().unwrap();
+        let url = format!("file://{}", absolute_path.to_str().unwrap());
+        let json_value = load_from_url(url.as_str(), None).unwrap();
+
+        let json_string = json_value.get("key").unwrap();
+        assert_eq!(json_string.as_str().unwrap(), "value");
+    }
+
+    #[test]
+    fn test_load_from_url_invalid_url() {
+        panic_with_expected_loader_error!(
+            load_from_url("this-is-an-invalid-url", None),
+            InvalidURL
+        );
+    }
+
+    #[test]
+    fn test_load_from_url_with_timeout_json_format_valid_json() {
+        let path_str = "test-data/json-files-loaders-tests/valid.json";
+        let absolute_path = path::Path::new(path_str).canonicalize().unwrap();
+        let url = format!("file://{}", absolute_path.to_str().unwrap());
+        let json_value =
+            load_from_url_with_timeout(url.as_str(), 1, Option::from(Format::JSON)).unwrap();
+
+        let json_string = json_value.get("key").unwrap();
+        assert_eq!(json_string.as_str().unwrap(), "value");
+    }
+
+    #[test]
+    fn test_load_from_url_with_timeout_yaml_format_valid_yaml() {
+        let path_str = "test-data/yaml-files-loaders-tests/valid.yaml";
+        let absolute_path = path::Path::new(path_str).canonicalize().unwrap();
+        let url = format!("file://{}", absolute_path.to_str().unwrap());
+        let json_value =
+            load_from_url_with_timeout(url.as_str(), 1, Option::from(Format::YAML)).unwrap();
+
+        let json_string = json_value.get("key").unwrap();
+        assert_eq!(json_string.as_str().unwrap(), "value");
+    }
+
+    #[test]
+    fn test_load_from_url_with_timeout_no_format_valid_json() {
+        let path_str = "test-data/json-files-loaders-tests/valid.json";
+        let absolute_path = path::Path::new(path_str).canonicalize().unwrap();
+        let url = format!("file://{}", absolute_path.to_str().unwrap());
+        let json_value = load_from_url_with_timeout(url.as_str(), 1, None).unwrap();
+
+        let json_string = json_value.get("key").unwrap();
+        assert_eq!(json_string.as_str().unwrap(), "value");
+    }
+
+    #[test]
+    fn test_load_from_url_with_timeout_invalid_url() {
+        panic_with_expected_loader_error!(
+            load_from_url_with_timeout("this-is-an-invalid-url", 1, None),
+            InvalidURL
+        );
+    }
+
+    #[test]
+    fn test_load_from_url_with_timeout_unfetchable_url() {
+        panic_with_expected_loader_error!(
+            load_from_url_with_timeout("http://not-existing-url.local", 100, None),
+            FetchURLFailed
+        );
+    }
 }
