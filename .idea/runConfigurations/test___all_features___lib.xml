@@ -1,11 +1,13 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="test --all-features" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+  <configuration default="false" name="test --all-features --lib" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
     <option name="channel" value="DEFAULT" />
-    <option name="command" value="test --all-features" />
+    <option name="command" value="test --all-features --lib" />
     <option name="nocapture" value="true" />
     <option name="backtrace" value="SHORT" />
     <option name="workingDirectory" value="file://$PROJECT_DIR$" />
-    <envs />
+    <envs>
+      <env name="RUST_BACKTRACE" value="full" />
+    </envs>
     <method v="2" />
   </configuration>
 </component>

@@ -19,8 +19,12 @@ crate-type = ["rlib", "cdylib"]
 built = "^0.3"
 
 [dependencies]
-chrono = "*"
+chrono = "^0.4"
+reqwest = "^0.8.6"
+serde_json = "^1"
+serde_yaml = "^0.7.5"
+url = "^1.7.1"
 
 [dependencies.pyo3]
-version = "*"
+version = "^0.4.1"
 features = ["extension-module"]

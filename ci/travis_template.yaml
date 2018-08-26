@@ -12,7 +12,7 @@ matrix:
 install:
 - |
   # code extracted from https://pythonhosted.org/CodeChat/.travis.yml.html
-  if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+  if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
     # Ensure that ccache is installed so subsequent build could be take advantage of caching ccache
     if ! find /usr/local/Cellar/ccache/*/bin/ccache -quit; then
       time brew install ccache
@@ -24,10 +24,10 @@ install:
       time brew install pyenv-virtualenv
     fi
     # Ensure that the required python version is installed, if not going to install it
-    if ! pyenv versions | grep -q $PYTHON; then
+    if ! pyenv versions | grep -q ${PYTHON}; then
       # Per the `pyenv homebrew recommendations <https://github.com/yyuu/pyenv/wiki#suggested-build-environment>`_.
       time brew install openssl readline sqlite3 xz zlib
-      time pyenv install $PYTHON
+      time pyenv install ${PYTHON}
     fi
     export PATH="/usr/local/opt/ccache/libexec:${PATH}" # From https://docs.travis-ci.com/user/caching/#ccache-on-os-x
     export PYENV_VERSION=${PYTHON}
@@ -57,6 +57,12 @@ install:
     ${HOME}/.cargo/bin/rustup component add rustfmt-preview --toolchain nightly
   fi
 - export PATH=${HOME}/.cargo/bin:${PATH}
+- |
+  # Install cargo-kcov dependencies (we don't need to do it in tox and keep it clean)
+  if [ "${TRAVIS_OS_NAME}" == "linux" -a "${TOXENV}" == "coverage" ]; then
+    command -v cargo-kcov &> /dev/null || cargo install cargo-kcov
+    command -v kcov &> /dev/null || ( cargo kcov --print-install-kcov-sh | sh)
+  fi
 
 before_script:
 # Print versions of the interesting tools
@@ -70,7 +76,7 @@ script:
 - tox
 
 after_success:
-- if [ "$TOXENV" == "coverage" ]; then codecov --verbose; fi
+- if [ "${TOXENV}" == "coverage" ]; then codecov --verbose; fi
 
 before_cache:
 # Delete artifacts of this specific library. This allows to reduce the amount of differences for the cache
