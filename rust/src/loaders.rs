@@ -150,3 +150,128 @@ pub fn load_from_url_with_timeout(
     }.get_loader()
     .load_from_url_with_timeout(url, timeout_ms)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::load_from_string;
+    use super::Format;
+    use super::LoaderError;
+
+    macro_rules! panic_with_expected_loader_error {
+        ($expression_to_panic:expr, $expected_enum_type:tt ) => {
+            match $expression_to_panic {
+                Err(error) => match error {
+                    LoaderError::$expected_enum_type(_inner_error) => {}
+                    _ => panic!(
+                        "{} is not panicking as expected",
+                        stringify!($expression_to_panic)
+                    ),
+                },
+                _ => panic!(
+                    "{} is not panicking as expected",
+                    stringify!($expression_to_panic)
+                ),
+            }
+        };
+    }
+
+    #[test]
+    fn test_load_from_string_json_format_valid_content() {
+        let json_content = r#"
+            {
+                "key_string": "value",
+                "key_integer": 1,
+                "key_boolean": true
+            }
+        "#;
+        let json_value =
+            load_from_string(String::from(json_content), Option::from(Format::JSON)).unwrap();
+
+        let json_string = json_value.get("key_string").unwrap();
+        assert_eq!(json_string.as_str().unwrap(), "value");
+
+        let json_integer = json_value.get("key_integer").unwrap();
+        assert_eq!(json_integer.as_i64().unwrap(), 1);
+
+        let json_boolean = json_value.get("key_boolean").unwrap();
+        assert_eq!(json_boolean.as_bool().unwrap(), true);
+    }
+
+    #[test]
+    fn test_load_from_string_yaml_format_valid_content() {
+        let yaml_content = r#"
+            key_string: value
+            key_integer: 1
+            key_boolean: true
+        "#;
+        let yaml_value =
+            load_from_string(String::from(yaml_content), Option::from(Format::YAML)).unwrap();
+
+        let yaml_string = yaml_value.get("key_string").unwrap();
+        assert_eq!(yaml_string.as_str().unwrap(), "value");
+
+        let yaml_integer = yaml_value.get("key_integer").unwrap();
+        assert_eq!(yaml_integer.as_i64().unwrap(), 1);
+
+        let yaml_boolean = yaml_value.get("key_boolean").unwrap();
+        assert_eq!(yaml_boolean.as_bool().unwrap(), true);
+    }
+
+    #[test]
+    fn test_load_from_string_no_format_valid_json_content() {
+        let json_content = r#"
+            {
+                "key_string": "value",
+                "key_integer": 1,
+                "key_boolean": true
+            }
+        "#;
+        let yaml_value = load_from_string(String::from(json_content), None).unwrap();
+
+        let yaml_string = yaml_value.get("key_string").unwrap();
+        assert_eq!(yaml_string.as_str().unwrap(), "value");
+
+        let yaml_integer = yaml_value.get("key_integer").unwrap();
+        assert_eq!(yaml_integer.as_i64().unwrap(), 1);
+
+        let yaml_boolean = yaml_value.get("key_boolean").unwrap();
+        assert_eq!(yaml_boolean.as_bool().unwrap(), true);
+    }
+
+    #[test]
+    fn test_load_from_string_json_format_invalid_content() {
+        let json_content = r#"
+            {
+                "key_object": {
+            }
+        "#;
+        panic_with_expected_loader_error!(
+            load_from_string(String::from(json_content), Option::from(Format::JSON)),
+            JSONError
+        );
+    }
+
+    #[test]
+    fn test_load_from_string_yaml_format_invalid_content() {
+        let yaml_content = r#"
+            key_object: {
+        "#;
+        panic_with_expected_loader_error!(
+            load_from_string(String::from(yaml_content), Option::from(Format::YAML)),
+            YAMLError
+        );
+    }
+
+    #[test]
+    fn test_load_from_string_no_format_invalid_json_content() {
+        let json_content = r#"
+            {
+                "key_object": {
+            }
+        "#;
+        panic_with_expected_loader_error!(
+            load_from_string(String::from(json_content), None),
+            YAMLError
+        );
+    }
+}
