@@ -11,6 +11,7 @@ use pyo3::prelude::*;
 mod errors;
 pub mod loaders;
 mod pyo3_built;
+pub mod swagger_schema;
 
 pub fn convert_string(a: i64) -> String {
     format!("{}", a).to_string()
