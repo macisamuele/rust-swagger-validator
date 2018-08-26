@@ -62,7 +62,8 @@ pub trait Loader {
     ) -> Result<serde_json::Value, LoaderError> {
         let url = url::Url::parse(url)?;
         if url.scheme() == "file" {
-            self.load_from_path(url.path())
+            // Using unwrap as we do assume that the url is valid
+            self.load_from_path(url.to_file_path().unwrap().to_str().unwrap())
         } else {
             let mut client_builder = reqwest::Client::builder();
             let client = client_builder
@@ -157,6 +158,7 @@ mod tests {
     use super::load_from_string;
     use super::load_from_url;
     use super::load_from_url_with_timeout;
+    use super::url;
     use super::Format;
     use super::LoaderError;
     use std::path;
@@ -319,7 +321,7 @@ mod tests {
     fn test_load_from_url_json_format_valid_json() {
         let path_str = "test-data/json-files-loaders-tests/valid.json";
         let absolute_path = path::Path::new(path_str).canonicalize().unwrap();
-        let url = format!("file://{}", absolute_path.to_str().unwrap());
+        let url = url::Url::from_file_path(absolute_path).unwrap();
         let json_value = load_from_url(url.as_str(), Option::from(Format::JSON)).unwrap();
 
         let json_string = json_value.get("key").unwrap();
@@ -330,7 +332,7 @@ mod tests {
     fn test_load_from_url_yaml_format_valid_yaml() {
         let path_str = "test-data/yaml-files-loaders-tests/valid.yaml";
         let absolute_path = path::Path::new(path_str).canonicalize().unwrap();
-        let url = format!("file://{}", absolute_path.to_str().unwrap());
+        let url = url::Url::from_file_path(absolute_path).unwrap();
         let json_value = load_from_url(url.as_str(), Option::from(Format::YAML)).unwrap();
 
         let json_string = json_value.get("key").unwrap();
@@ -341,7 +343,7 @@ mod tests {
     fn test_load_from_url_no_format_valid_json() {
         let path_str = "test-data/json-files-loaders-tests/valid.json";
         let absolute_path = path::Path::new(path_str).canonicalize().unwrap();
-        let url = format!("file://{}", absolute_path.to_str().unwrap());
+        let url = url::Url::from_file_path(absolute_path).unwrap();
         let json_value = load_from_url(url.as_str(), None).unwrap();
 
         let json_string = json_value.get("key").unwrap();
@@ -360,7 +362,7 @@ mod tests {
     fn test_load_from_url_with_timeout_json_format_valid_json() {
         let path_str = "test-data/json-files-loaders-tests/valid.json";
         let absolute_path = path::Path::new(path_str).canonicalize().unwrap();
-        let url = format!("file://{}", absolute_path.to_str().unwrap());
+        let url = url::Url::from_file_path(absolute_path).unwrap();
         let json_value =
             load_from_url_with_timeout(url.as_str(), 1, Option::from(Format::JSON)).unwrap();
 
@@ -372,7 +374,7 @@ mod tests {
     fn test_load_from_url_with_timeout_yaml_format_valid_yaml() {
         let path_str = "test-data/yaml-files-loaders-tests/valid.yaml";
         let absolute_path = path::Path::new(path_str).canonicalize().unwrap();
-        let url = format!("file://{}", absolute_path.to_str().unwrap());
+        let url = url::Url::from_file_path(absolute_path).unwrap();
         let json_value =
             load_from_url_with_timeout(url.as_str(), 1, Option::from(Format::YAML)).unwrap();
 
@@ -384,7 +386,7 @@ mod tests {
     fn test_load_from_url_with_timeout_no_format_valid_json() {
         let path_str = "test-data/json-files-loaders-tests/valid.json";
         let absolute_path = path::Path::new(path_str).canonicalize().unwrap();
-        let url = format!("file://{}", absolute_path.to_str().unwrap());
+        let url = url::Url::from_file_path(absolute_path).unwrap();
         let json_value = load_from_url_with_timeout(url.as_str(), 1, None).unwrap();
 
         let json_string = json_value.get("key").unwrap();
