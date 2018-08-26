@@ -153,9 +153,13 @@ pub fn load_from_url_with_timeout(
 
 #[cfg(test)]
 mod tests {
+    use super::load_from_path;
     use super::load_from_string;
+    use super::load_from_url;
+    use super::load_from_url_with_timeout;
     use super::Format;
     use super::LoaderError;
+    use std::path;
 
     macro_rules! panic_with_expected_loader_error {
         ($expression_to_panic:expr, $expected_enum_type:tt ) => {
@@ -273,5 +277,41 @@ mod tests {
             load_from_string(String::from(json_content), None),
             YAMLError
         );
+    }
+
+    #[test]
+    fn test_load_from_path_json_format_valid_json() {
+        let json_value = load_from_path(
+            "test-data/json-files-loaders-tests/valid.json",
+            Option::from(Format::JSON),
+        ).unwrap();
+
+        let json_string = json_value.get("key").unwrap();
+        assert_eq!(json_string.as_str().unwrap(), "value");
+    }
+
+    #[test]
+    fn test_load_from_path_yaml_format_valid_yaml() {
+        let yaml_value = load_from_path(
+            "test-data/yaml-files-loaders-tests/valid.yaml",
+            Option::from(Format::YAML),
+        ).unwrap();
+
+        let yaml_string = yaml_value.get("key").unwrap();
+        assert_eq!(yaml_string.as_str().unwrap(), "value");
+    }
+
+    #[test]
+    fn test_load_from_path_no_format_valid_json() {
+        let yaml_value =
+            load_from_path("test-data/json-files-loaders-tests/valid.json", None).unwrap();
+
+        let json_string = yaml_value.get("key").unwrap();
+        assert_eq!(json_string.as_str().unwrap(), "value");
+    }
+
+    #[test]
+    fn test_load_from_path_file_not_found() {
+        panic_with_expected_loader_error!(load_from_path("test-data/no-file-found", None), IOError);
     }
 }
