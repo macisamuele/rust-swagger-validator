@@ -3,6 +3,8 @@ extern crate pyo3;
 
 use pyo3::prelude::*;
 
+#[macro_use]
+mod errors;
 mod pyo3_built;
 
 fn convert_string(a: i64) -> String {
