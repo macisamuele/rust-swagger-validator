@@ -249,6 +249,14 @@ fn test_load_from_url_with_timeout_invalid_url() {
 }
 
 #[test]
+fn test_load_from_url_with_syntattically_invalid_url() {
+    panic_with_expected_loader_error!(
+        load_from_url_with_timeout("http:/caca", 1, None),
+        InvalidURL
+    );
+}
+
+#[test]
 fn test_load_from_url_with_timeout_unfetchable_url() {
     panic_with_expected_loader_error!(
         load_from_url_with_timeout("http://not-existing-url.local", 100, None),

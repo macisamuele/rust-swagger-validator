@@ -15,23 +15,40 @@ extern crate serde_json;
 extern crate serde_yaml;
 extern crate url;
 
+use std::cell;
 use std::fs;
 use std::io;
 use std::io::prelude::Read;
 use std::path;
 use std::time::Duration;
 
+#[derive(Clone, Copy, Debug)]
+pub enum UrlError {
+    ParseError(url::ParseError),
+    SyntaxViolation(url::SyntaxViolation),
+}
+from_error_to_enum_variant!(url::ParseError, UrlError, ParseError);
+from_error_to_enum_variant!(url::SyntaxViolation, UrlError, SyntaxViolation);
+
 #[derive(Debug)]
 pub enum LoaderError {
     IOError(io::Error),
-    InvalidURL(url::ParseError),
+    InvalidURL(UrlError),
     FetchURLFailed(reqwest::Error),
     JSONError(serde_json::Error),
     YAMLError(serde_yaml::Error),
 }
+from_error_to_enum_variant!(serde_json::Error, LoaderError, JSONError);
+from_error_to_enum_variant!(serde_yaml::Error, LoaderError, YAMLError);
 from_error_to_enum_variant!(io::Error, LoaderError, IOError);
-from_error_to_enum_variant!(url::ParseError, LoaderError, InvalidURL);
+from_error_to_enum_variant!(UrlError, LoaderError, InvalidURL);
 from_error_to_enum_variant!(reqwest::Error, LoaderError, FetchURLFailed);
+from_error_to_enum_variant!(url::ParseError, LoaderError, InvalidURL, |error| {
+    UrlError::ParseError(error)
+});
+from_error_to_enum_variant!(url::SyntaxViolation, LoaderError, InvalidURL, |error| {
+    UrlError::SyntaxViolation(error)
+});
 
 #[derive(Clone, Copy, Debug)]
 pub enum Format {
@@ -57,7 +74,15 @@ pub trait Loader {
         url: &str,
         timeout_ms: u64,
     ) -> Result<serde_json::Value, LoaderError> {
-        let url = url::Url::parse(url)?;
+        let violation = cell::Cell::new(None);
+        let url = url::Url::options()
+            .syntax_violation_callback(Some(&|v| violation.set(Some(v))))
+            .parse(url)?;
+
+        match violation.into_inner() {
+            Some(violation) => Err(violation)?,
+            _ => {}
+        }
         if url.scheme() == "file" {
             // Using unwrap as we do assume that the url is valid
             self.load_from_path(url.to_file_path().unwrap().to_str().unwrap())
@@ -87,7 +112,7 @@ impl Loader for JSONLoader {
     fn load_from_string(&self, content: String) -> Result<serde_json::Value, LoaderError> {
         match serde_json::from_str(&content) {
             Ok(value) => Ok(value),
-            Err(serde_error) => Err(LoaderError::JSONError(serde_error)),
+            Err(serde_error) => Err(serde_error)?,
         }
     }
 }
@@ -96,7 +121,7 @@ impl Loader for YAMLLoader {
     fn load_from_string(&self, content: String) -> Result<serde_json::Value, LoaderError> {
         match serde_yaml::from_str(&content) {
             Ok(value) => Ok(value),
-            Err(serde_error) => Err(LoaderError::YAMLError(serde_error)),
+            Err(serde_error) => Err(serde_error)?,
         }
     }
 }
