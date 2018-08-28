@@ -42,19 +42,16 @@ pub enum Format {
 pub trait Loader {
     fn load_from_string(&self, content: String) -> Result<serde_json::Value, LoaderError>;
 
-    #[inline]
     fn load_from_path(&self, path: &str) -> Result<serde_json::Value, LoaderError> {
         let mut content = String::new();
         let _ = fs::File::open(&path::Path::new(path))?.read_to_string(&mut content)?;
         self.load_from_string(content)
     }
 
-    #[inline]
     fn load_from_url(&self, url: &str) -> Result<serde_json::Value, LoaderError> {
         self.load_from_url_with_timeout(url, 30_000)
     }
 
-    #[inline]
     fn load_from_url_with_timeout(
         &self,
         url: &str,
@@ -87,7 +84,6 @@ impl Format {
 }
 
 impl Loader for JSONLoader {
-    #[inline]
     fn load_from_string(&self, content: String) -> Result<serde_json::Value, LoaderError> {
         match serde_json::from_str(&content) {
             Ok(value) => Ok(value),
@@ -97,7 +93,6 @@ impl Loader for JSONLoader {
 }
 
 impl Loader for YAMLLoader {
-    #[inline]
     fn load_from_string(&self, content: String) -> Result<serde_json::Value, LoaderError> {
         match serde_yaml::from_str(&content) {
             Ok(value) => Ok(value),
@@ -106,7 +101,6 @@ impl Loader for YAMLLoader {
     }
 }
 
-#[inline]
 pub fn load_from_string(
     content: String,
     format: Option<Format>,
@@ -118,7 +112,6 @@ pub fn load_from_string(
     .load_from_string(content)
 }
 
-#[inline]
 pub fn load_from_path(
     path: &str,
     format: Option<Format>,
@@ -130,7 +123,6 @@ pub fn load_from_path(
     .load_from_path(path)
 }
 
-#[inline]
 pub fn load_from_url(url: &str, format: Option<Format>) -> Result<serde_json::Value, LoaderError> {
     match format {
         None => Format::YAML, // TODO: make it smarter?
@@ -139,7 +131,6 @@ pub fn load_from_url(url: &str, format: Option<Format>) -> Result<serde_json::Va
     .load_from_url(url)
 }
 
-#[inline]
 pub fn load_from_url_with_timeout(
     url: &str,
     timeout_ms: u64,
