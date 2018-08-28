@@ -106,7 +106,7 @@ install:
     source venv/bin/activate
     python --version
   fi
-- export RUST_BACKTRACE=1
+- export RUST_BACKTRACE=full
 - export PYTHONUNBUFFERED=1
 - pip install codecov tox-pip-extensions
 - |

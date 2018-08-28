@@ -40,7 +40,7 @@ environment:
 build: off
 
 install:
-- cmd: SET RUST_BACKTRACE=1  # Rust build are verbose
+- cmd: SET RUST_BACKTRACE=full  # Rust build are verbose
 - cmd: SET PYTHONUNBUFFERED=1  # disable python buffering, output come as it is generated
 - cmd: SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
 # TODO: remove virtualenv install from personal repo once https://github.com/pypa/virtualenv/pull/1023 is merged
