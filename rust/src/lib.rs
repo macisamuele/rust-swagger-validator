@@ -8,11 +8,11 @@ mod errors;
 pub mod loaders;
 mod pyo3_built;
 
-fn convert_string(a: i64) -> String {
+pub fn convert_string(a: i64) -> String {
     format!("{}", a).to_string()
 }
 
-fn return_42() -> usize {
+pub fn return_42() -> usize {
     42
 }
 
@@ -32,20 +32,4 @@ fn _rust_module(py: Python, m: &PyModule) -> PyResult<()> {
     }
 
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use convert_string;
-    use return_42;
-
-    #[test]
-    fn test_convert_string() {
-        assert_eq!(convert_string(1), "1");
-    }
-
-    #[test]
-    fn test_return_42() {
-        assert_eq!(return_42(), 42);
-    }
 }

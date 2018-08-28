@@ -3,7 +3,7 @@ name = "rust_swagger_validator"
 version = "0.1.1"
 authors = ["Samuele Maci <macisamuele@gmail.com>"]
 publish = false
-build = "rust/src/build.rs"
+build = "rust/build.rs"
 
 [badges]
 appveyor = { repository = "macisamuele/rust-swagger-validator", branch = "master", service = "github"}
@@ -14,6 +14,10 @@ codecov = { repository = "macisamuele/rust-swagger-validator", branch = "master"
 path = "rust/src/lib.rs"
 name = "rust_swagger_validator"
 crate-type = ["rlib", "cdylib"]
+
+[[test]]
+path = "rust/tests/luncher.rs"
+name = "rust_swagger_validator_tests"
 
 [build-dependencies]
 built = "^0.3"
