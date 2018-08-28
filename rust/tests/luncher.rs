@@ -13,3 +13,4 @@ extern crate rust_swagger_validator;
 
 mod test_lib;
 mod test_loaders;
+mod test_swagger_schema;

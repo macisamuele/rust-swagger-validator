@@ -34,22 +34,14 @@ pub struct SwaggerSchema {
     swagger_schema: schema::Schema,
 }
 
-#[derive(Debug)]
-pub enum SwaggerSchemaError {
+enum_with_automatic_from_trait_implementation!(
+    derive(Debug),
+    SwaggerSchemaError,
     IOError(io::Error),
     InvalidURL(url::ParseError),
     LoaderError(loaders::LoaderError),
     SchemaError(schema::SchemaError),
-    ValidationError(json_schema::ValidationState),
-}
-from_error_to_enum_variant!(io::Error, SwaggerSchemaError, IOError);
-from_error_to_enum_variant!(url::ParseError, SwaggerSchemaError, InvalidURL);
-from_error_to_enum_variant!(self::loaders::LoaderError, SwaggerSchemaError, LoaderError);
-from_error_to_enum_variant!(schema::SchemaError, SwaggerSchemaError, SchemaError);
-from_error_to_enum_variant!(
-    json_schema::ValidationState,
-    SwaggerSchemaError,
-    ValidationError
+    ValidationError(json_schema::ValidationState)
 );
 
 impl SwaggerSchema {
