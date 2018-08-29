@@ -16,18 +16,37 @@ use std::path;
 
 macro_rules! panic_with_expected_loader_error {
     ($expression_to_panic:expr, $expected_enum_type:tt ) => {
-        match $expression_to_panic {
-            Err(error) => match error {
-                LoaderError::$expected_enum_type(_inner_error) => {}
-                _ => panic!(
-                    "{} is not panicking as expected",
-                    stringify!($expression_to_panic)
-                ),
-            },
-            _ => panic!(
+        panic_with_expected_loader_error!(
+            $expression_to_panic,
+            $expected_enum_type,
+            |inner_error| {
+                // Small hack to ensure that the closure returns a Result object that will always return Ok(1)
+                match Option::from(inner_error) {
+                    Some(_) => Ok(1),
+                    None => Err(1),
+                }
+            }
+        );
+    };
+
+    ($expression_to_panic:expr, $expected_enum_type:tt, $inner_error_check:expr) => {
+        let throw_panic = || {
+            panic!(
                 "{} is not panicking as expected",
                 stringify!($expression_to_panic)
-            ),
+            )
+        };
+        match $expression_to_panic {
+            Err(error) => match error {
+                LoaderError::$expected_enum_type(inner_error) => {
+                    match $inner_error_check(inner_error) {
+                        Err(_) => throw_panic(),
+                        _ => {}
+                    }
+                }
+                _ => throw_panic(),
+            },
+            _ => throw_panic(),
         }
     };
 }
@@ -249,9 +268,21 @@ fn test_load_from_url_with_timeout_invalid_url() {
 }
 
 #[test]
+fn test_load_from_url_with_syntattically_invalid_url() {
+    panic_with_expected_loader_error!(
+        load_from_url_with_timeout("http:/caca", 1, None),
+        InvalidURL,
+        |inner_error| match inner_error {
+            UrlError::SyntaxViolation(_) => Ok(1),
+            _ => Err(1),
+        }
+    );
+}
+
+#[test]
 fn test_load_from_url_with_timeout_unfetchable_url() {
     panic_with_expected_loader_error!(
-        load_from_url_with_timeout("http://not-existing-url.local", 100, None),
+        load_from_url_with_timeout("scheme://not-existing-url.local", 200, None),
         FetchURLFailed
     );
 }

@@ -15,6 +15,11 @@ path = "rust/src/lib.rs"
 name = "rust_swagger_validator"
 crate-type = ["rlib", "cdylib"]
 
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+
 [[test]]
 path = "rust/tests/luncher.rs"
 name = "rust_swagger_validator_tests"
