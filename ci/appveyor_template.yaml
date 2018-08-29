@@ -49,8 +49,6 @@ before_test:
 
 test_script:
 - cmd: tox
-# after_test:
-# - if [ "$TOXENV" == "coverage" ]; then codecov; fi
 
 cache:
 - '%USERPROFILE%\AppData\Local\pip\'
@@ -65,6 +63,10 @@ notifications:
   incoming_webhook:
     # Personal Slack notification
     secure: wN2af6BR8QTbUaIK7ytZx8kzVOEOUUIhvWP1IjVnAG8Wa3QYC1PaOzF1ro0vUerRPjE7kYtSHqJ2/v0kFIyJ2AETJcN1Z7oLsIX199EYANI=
+
+on_finish:
+# Print build.rs so we could expose information related to rust build
+- sh: find target/*/build/rust_swagger_validator-*/out/built.rs | while read path; do echo ${path} && cat ${path} && echo && echo; done
 
 # Enable remote desktop debugging (https://www.appveyor.com/docs/how-to/rdp-to-build-worker/)
 init:

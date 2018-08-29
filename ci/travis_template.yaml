@@ -79,6 +79,8 @@ after_success:
 - if [ "${TOXENV}" == "coverage" ]; then codecov --verbose; fi
 
 before_cache:
+# Print build.rs so we could expose information related to rust build
+- find target/*/build/rust_swagger_validator-*/out/built.rs | while read path; do echo ${path} && cat ${path} && echo && echo; done
 # Delete artifacts of this specific library. This allows to reduce the amount of differences for the cache
 # NOTE: this means that rust_swagger_validator will be built every time but we gain on not building all the dependencies
 - find ${TRAVIS_BUILD_DIR}/target/*/*rust_swagger_validator* | xargs rm -rfv
