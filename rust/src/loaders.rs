@@ -22,27 +22,22 @@ use std::io::prelude::Read;
 use std::path;
 use std::time::Duration;
 
-#[derive(Clone, Copy, Debug)]
-pub enum UrlError {
+enum_with_automatic_from_trait_implementation!(
+    derive(Clone, Copy, Debug),
+    UrlError,
     ParseError(url::ParseError),
-    SyntaxViolation(url::SyntaxViolation),
-}
-from_error_to_enum_variant!(url::ParseError, UrlError, ParseError);
-from_error_to_enum_variant!(url::SyntaxViolation, UrlError, SyntaxViolation);
+    SyntaxViolation(url::SyntaxViolation)
+);
 
-#[derive(Debug)]
-pub enum LoaderError {
+enum_with_automatic_from_trait_implementation!(
+    derive(Debug),
+    LoaderError,
     IOError(io::Error),
     InvalidURL(UrlError),
     FetchURLFailed(reqwest::Error),
     JSONError(serde_json::Error),
-    YAMLError(serde_yaml::Error),
-}
-from_error_to_enum_variant!(serde_json::Error, LoaderError, JSONError);
-from_error_to_enum_variant!(serde_yaml::Error, LoaderError, YAMLError);
-from_error_to_enum_variant!(io::Error, LoaderError, IOError);
-from_error_to_enum_variant!(UrlError, LoaderError, InvalidURL);
-from_error_to_enum_variant!(reqwest::Error, LoaderError, FetchURLFailed);
+    YAMLError(serde_yaml::Error)
+);
 from_error_to_enum_variant!(url::ParseError, LoaderError, InvalidURL, |error| {
     UrlError::ParseError(error)
 });

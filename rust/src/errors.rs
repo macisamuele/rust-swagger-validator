@@ -50,3 +50,42 @@ macro_rules! from_error_to_enum_variant {
         }
     };
 }
+
+macro_rules! enum_with_automatic_from_trait_implementation {
+    // Define association between errors and equivalent enum errors representations
+    // This will allow to reduce the amount of `match`es and use a simpler `?`
+    //
+    // Example of usage 1:
+    //      enum_with_automatic_from_trait_implementation!(EnumName, A(i32), B(bool));
+    // is equivalent to write
+    // #[derive(Debug)]
+    // pub enum EnumName {
+    //     A(i32),
+    //     B(bool)
+    // }
+    // impl From<i32> for EnumName {
+    //     fn from(error: i32) -> Self {
+    //         EnumName::A(error)
+    //     }
+    // }
+    // impl From<bool> for EnumName {
+    //     fn from(error: bool) -> Self {
+    //         EnumName::B(error)
+    //     }
+    // }
+    (
+        $derive:meta,
+        $enum_name:ident,
+        $($variant_name:ident($inner_type:path)),+
+    ) => (
+            #[$derive]
+            pub enum $enum_name {
+                $(
+                    $variant_name($inner_type)
+                ),+
+            }
+            $(
+                from_error_to_enum_variant!($inner_type, $enum_name, $variant_name);
+            )+
+    );
+}

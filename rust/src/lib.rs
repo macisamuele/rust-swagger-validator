@@ -1,4 +1,4 @@
-// Uncomment the following lines to support debug of macros
+//// Uncomment the following lines to support debug of macros
 //#![feature(trace_macros)]
 //trace_macros!(true);
 
