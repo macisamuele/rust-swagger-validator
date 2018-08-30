@@ -1,0 +1,12 @@
+swagger: '2.0'
+info:
+  title: Test
+  version: '1.0'
+paths:
+  /endpoint:
+    get:
+      description: A get endpoint
+      operationId: get_endpoint
+      responses:
+        default:
+          description: A generic response

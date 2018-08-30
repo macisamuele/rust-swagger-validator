@@ -29,7 +29,15 @@ setup(
             strip=Strip.All,
         ),
     ],
-    packages=['rust_swagger_validator'],
+    packages=[
+        'rust_swagger_validator',
+    ],
+    package_data={
+        'rust_swagger_validator': ['py.typed'],
+    },
+    extras_require={
+        ':python_version<"3.5"': ['typing'],
+    },
     package_dir={'': 'python'},
     zip_safe=False,
 )
