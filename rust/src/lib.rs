@@ -2,7 +2,7 @@
 //#![feature(trace_macros)]
 //trace_macros!(true);
 
-#[macro_use]
+//#[macro_use]
 extern crate pyo3;
 
 use pyo3::prelude::*;
@@ -27,12 +27,12 @@ fn _rust_module(py: Python, m: &PyModule) -> PyResult<()> {
     #[pyfn(m, "convert_string")]
     fn convert_string_py(a: i64) -> PyResult<String> {
         let out = convert_string(a);
-        return Ok(out);
+        Ok(out)
     }
 
     #[pyfn(m, "no_parameters")]
     fn no_parameters() -> PyResult<usize> {
-        return Ok(return_42());
+        Ok(return_42())
     }
 
     Ok(())

@@ -74,10 +74,10 @@ pub trait Loader {
             .syntax_violation_callback(Some(&|v| violation.set(Some(v))))
             .parse(url)?;
 
-        match violation.into_inner() {
-            Some(violation) => Err(violation)?,
-            _ => {}
+        if let Some(violation) = violation.into_inner() {
+            Err(violation)?
         }
+
         if url.scheme() == "file" {
             // Using unwrap as we do assume that the url is valid
             self.load_from_path(url.to_file_path().unwrap().to_str().unwrap())
