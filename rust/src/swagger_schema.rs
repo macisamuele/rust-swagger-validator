@@ -31,7 +31,7 @@ use std::path;
 #[derive(Debug)]
 pub struct SwaggerSchema {
     uri: Option<Url>,
-    swagger_schema: schema::Schema,
+    schema: schema::Schema,
 }
 
 enum_with_automatic_from_trait_implementation!(
@@ -77,7 +77,7 @@ impl SwaggerSchema {
             )?;
             Ok(SwaggerSchema {
                 uri: url,
-                swagger_schema,
+                schema: swagger_schema,
             })
         } else {
             Err(SwaggerSchemaError::ValidationError(validation_state))
@@ -86,13 +86,13 @@ impl SwaggerSchema {
 
     pub fn validation_state(self, object: &Value) -> json_schema::ValidationState {
         let scope = json_schema::Scope::new();
-        let scoped_schema = schema::ScopedSchema::new(&scope, &self.swagger_schema);
+        let scoped_schema = schema::ScopedSchema::new(&scope, &self.schema);
         scoped_schema.validate(object)
     }
 }
 
 impl<'a> fmt::Display for SwaggerSchema {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "Uri {:?}\n{:?}", self.uri, self.swagger_schema)
+        write!(f, "Uri {:?}\n{:?}", self.uri, self.schema)
     }
 }
