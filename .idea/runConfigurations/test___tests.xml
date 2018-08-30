@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="clippy -- -Dwarnings" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+  <configuration default="false" name="test --tests" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
     <option name="channel" value="DEFAULT" />
-    <option name="command" value="clippy -- -Dwarnings" />
+    <option name="command" value="test --tests" />
     <option name="nocapture" value="true" />
     <option name="backtrace" value="SHORT" />
     <option name="workingDirectory" value="file://$PROJECT_DIR$" />

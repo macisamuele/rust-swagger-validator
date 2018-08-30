@@ -5,7 +5,9 @@
     <option name="nocapture" value="true" />
     <option name="backtrace" value="SHORT" />
     <option name="workingDirectory" value="file://$PROJECT_DIR$" />
-    <envs />
+    <envs>
+      <env name="RUST_BACKTRACE" value="full" />
+    </envs>
     <method v="2" />
   </configuration>
 </component>

@@ -10,7 +10,6 @@
     unused_qualifications,
 )]
 
-#[macro_export]
 macro_rules! from_error_to_enum_variant {
     // Define association between errors and equivalent enum errors representations
     // This will allow to reduce the amount of `match`es and use a simpler `?`
