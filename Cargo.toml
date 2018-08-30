@@ -15,6 +15,9 @@ path = "rust/src/lib.rs"
 name = "rust_swagger_validator"
 crate-type = ["rlib", "cdylib"]
 
+[features]
+python_bindings = ["chrono"]
+
 [profile.release]
 opt-level = 3
 lto = "thin"
@@ -28,7 +31,7 @@ name = "rust_swagger_validator_tests"
 built = "^0.3"
 
 [dependencies]
-chrono = "^0.4"
+chrono = {version = "^0.4", optional = true}  # Optional dependency as required only during python bindings
 reqwest = "^0.8.6"
 serde_json = "^1"
 serde_yaml = "^0.7.5"

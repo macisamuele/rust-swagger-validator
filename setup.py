@@ -27,6 +27,7 @@ setup(
             path='Cargo.toml',
             binding=Binding.PyO3,
             strip=Strip.All,
+            features=['python_bindings'],
         ),
     ],
     packages=[

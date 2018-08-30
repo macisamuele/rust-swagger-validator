@@ -12,5 +12,6 @@
 extern crate rust_swagger_validator;
 
 mod test_loaders;
+#[cfg(feature = "python_bindings")]
 mod test_python;
 mod test_swagger_schema;
