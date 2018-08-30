@@ -9,7 +9,7 @@
     unused_qualifications,
 )]
 
-use rust_swagger_validator::*;
+use rust_swagger_validator::python::*;
 
 #[test]
 fn test_convert_string() {
