@@ -56,6 +56,11 @@ install:
   if ! ${HOME}/.cargo/bin/rustup component list | grep -Eq '^rustfmt-preview[^ ]* +\(installed\)$'; then
     ${HOME}/.cargo/bin/rustup component add rustfmt-preview --toolchain nightly
   fi
+- |
+  # Install rustfmt-preview component only if it is not alraedy installed (handle the case in which cache is empty)
+  if ! ${HOME}/.cargo/bin/rustup component list | grep -Eq '^clippy-preview[^ ]* +\(installed\)$'; then
+    ${HOME}/.cargo/bin/rustup component add clippy-preview --toolchain nightly
+  fi
 - export PATH=${HOME}/.cargo/bin:${PATH}
 - |
   # Install cargo-kcov dependencies (we don't need to do it in tox and keep it clean)
