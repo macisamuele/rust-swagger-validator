@@ -30,8 +30,8 @@ use std::path;
 // FIXME: note that could be possible having custom
 #[derive(Debug)]
 pub struct SwaggerSchema {
-    uri: Option<Url>,
-    schema: schema::Schema,
+    pub uri: Option<Url>,
+    pub schema: schema::Schema,
 }
 
 enum_with_automatic_from_trait_implementation!(

@@ -19,6 +19,7 @@ with open('python/rust_swagger_validator/__init__.py') as f:
 
 setup(
     name='rust_swagger_validator',
+    packages=['rust_swagger_validator'],
     version=version,
     setup_requires=['setuptools-rust>=0.9.2'],
     rust_extensions=[
@@ -30,12 +31,12 @@ setup(
             features=['python_bindings'],
         ),
     ],
-    packages=[
-        'rust_swagger_validator',
-    ],
     package_data={
         'rust_swagger_validator': ['py.typed'],
     },
+    install_requires=[
+        'six',
+    ],
     extras_require={
         ':python_version<"3.5"': ['typing'],
     },

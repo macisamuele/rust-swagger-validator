@@ -1,9 +1,15 @@
 if __name__ == '__main__':
-    from rust_swagger_validator._rust_module import convert_string
-    from rust_swagger_validator._rust_module import no_parameters
-    from rust_swagger_validator._rust_module import __build__
+    from os.path import abspath
+    from os.path import join
 
-    print(1)
-    print(no_parameters())
-    print(convert_string(1))
-    print(__build__)
+    from six.moves.urllib.parse import urljoin
+    from rust_swagger_validator import _rust_module
+
+    print(_rust_module.__build__)
+    print(_rust_module.convert_string(1))
+    print(_rust_module.no_parameters())
+    print(_rust_module.__dict__)
+
+    spec_url = urljoin('file:', abspath(join('test-data', 'json-valid-specs', 'swagger.json')))
+    print(_rust_module.SwaggerSpec.from_url(spec_url).uri)
+    print(_rust_module.SwaggerSpec.from_url(spec_url, False).uri)

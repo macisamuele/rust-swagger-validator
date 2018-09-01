@@ -17,6 +17,6 @@ fn test_convert_string() {
 }
 
 #[test]
-fn test_return_42() {
-    assert_eq!(return_42(), 42);
+fn test_no_parameters() {
+    assert_eq!(no_parameters(), 42);
 }
