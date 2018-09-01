@@ -13,3 +13,11 @@ if __name__ == '__main__':
     spec_url = urljoin('file:', abspath(join('test-data', 'json-valid-specs', 'swagger.json')))
     print(_rust_module.SwaggerSpec.from_url(spec_url).uri)
     print(_rust_module.SwaggerSpec.from_url(spec_url, False).uri)
+    try:
+        print(_rust_module.SwaggerSpec.from_url('test-data/json-valid-specs/swagger.json').uri)
+    except Exception as e:
+        print(f'Exception: {e}')
+    try:
+        print(_rust_module.SwaggerSpec.from_url('does-not-really-matter', True).uri)
+    except Exception as e:
+        print(f'Exception: {e}')

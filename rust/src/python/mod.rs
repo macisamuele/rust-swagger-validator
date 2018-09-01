@@ -8,11 +8,17 @@
     unused_results,
     unused_qualifications,
 )]
+#![cfg_attr(
+    feature = "cargo-clippy",
+// Allow lints that will fail due to PyO3
+    allow(cast_ptr_alignment, transmute_ptr_to_ptr)
+)]
 
 use pyo3::prelude::*;
 use pyo3::PyDict;
 use pyo3::PyRawObject;
 use swagger_schema::SwaggerSchema;
+use swagger_schema::SwaggerSchemaError;
 
 #[macro_use]
 mod pyo3_built;
@@ -52,12 +58,17 @@ impl SwaggerSpec {
         follow_references: bool,
     ) -> PyResult<PyObject> {
         if follow_references {
-            unimplemented!();
+            let err = PyErr::new::<exc::NotImplementedError, _>(
+                "follow_references is not implemented yet".to_string(),
+            );
+            return Err(err);
         }
+
+        let swagger_schema = SwaggerSchema::new_from_url(url)?;
 
         initialize_python_object!(py, cls, |token| Self {
             token,
-            swagger_schema: SwaggerSchema::new_from_url(url).unwrap()
+            swagger_schema
         })
     }
 
@@ -67,6 +78,13 @@ impl SwaggerSpec {
             Some(z) => Ok(z.to_owned().to_string()),
             None => panic!("None"),
         }
+    }
+}
+
+impl From<SwaggerSchemaError> for PyErr {
+    fn from(err: SwaggerSchemaError) -> Self {
+        // TODO: make this more descriptive and extracting a credible exception
+        Self::new::<exc::ValueError, _>(format!("{:?}", err))
     }
 }
 
