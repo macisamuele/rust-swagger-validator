@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="(expand macros) rustc -- -Z unstable-options --pretty=expanded" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+  <configuration default="false" name="(expand macros) rustc --all-features -- -Z external-macro-backtrace -Z unstable-options --pretty=expanded" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
     <option name="channel" value="DEFAULT" />
-    <option name="command" value="rustc -- -Z external-macro-backtrace -Z unstable-options --pretty=expanded" />
+    <option name="command" value="rustc --all-features -- -Z external-macro-backtrace -Z unstable-options --pretty=expanded" />
     <option name="nocapture" value="true" />
     <option name="backtrace" value="SHORT" />
     <option name="workingDirectory" value="file://$PROJECT_DIR$" />
