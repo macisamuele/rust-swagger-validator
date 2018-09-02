@@ -16,7 +16,7 @@ name = "rust_swagger_validator"
 crate-type = ["rlib", "cdylib"]
 
 [features]
-python_bindings = ["chrono"]
+python_bindings = ["chrono", "pyo3"]
 
 [profile.release]
 opt-level = 3
@@ -41,3 +41,4 @@ valico = "^2.1.0"
 [dependencies.pyo3]
 version = "^0.4.1"
 features = ["extension-module"]
+optional = true
