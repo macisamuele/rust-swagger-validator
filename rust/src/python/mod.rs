@@ -17,8 +17,8 @@
 use pyo3::prelude::*;
 use pyo3::PyDict;
 use pyo3::PyRawObject;
-use swagger_schema::SwaggerSchema;
-use swagger_schema::SwaggerSchemaError;
+use swagger_schema::SwaggerSchema as RustSwaggerSchema;
+use swagger_schema::SwaggerSchemaError as RustSwaggerSchemaError;
 
 #[macro_use]
 mod pyo3_built;
@@ -36,13 +36,13 @@ pub fn no_parameters() -> usize {
 }
 
 #[pyclass(subclass)]
-struct SwaggerSpec {
+struct RustSwaggerSpec {
     token: PyToken,
-    swagger_schema: SwaggerSchema,
+    swagger_schema: RustSwaggerSchema,
 }
 
 #[pymethods]
-impl SwaggerSpec {
+impl RustSwaggerSpec {
     #[new]
     fn __new__(_obj: &PyRawObject, _base_url: &str, _swagger_spec_dict: &PyDict) -> PyResult<()> {
         // TODO: find a way to convert PyDict into serde_json::Value
@@ -64,7 +64,7 @@ impl SwaggerSpec {
             return Err(err);
         }
 
-        let swagger_schema = SwaggerSchema::new_from_url(url)?;
+        let swagger_schema = RustSwaggerSchema::new_from_url(url)?;
 
         initialize_python_object!(py, cls, |token| Self {
             token,
@@ -81,8 +81,8 @@ impl SwaggerSpec {
     }
 }
 
-impl From<SwaggerSchemaError> for PyErr {
-    fn from(err: SwaggerSchemaError) -> Self {
+impl From<RustSwaggerSchemaError> for PyErr {
+    fn from(err: RustSwaggerSchemaError) -> Self {
         // TODO: make this more descriptive and extracting a credible exception
         Self::new::<exc::ValueError, _>(format!("{:?}", err))
     }
@@ -91,7 +91,7 @@ impl From<SwaggerSchemaError> for PyErr {
 #[pymodinit]
 fn _rust_module(py: Python, m: &PyModule) -> PyResult<()> {
     m.add("__build__", pyo3_built!(py))?;
-    m.add_class::<SwaggerSpec>()?;
+    m.add_class::<RustSwaggerSpec>()?;
 
     m.add_function(wrap_function!(convert_string))?;
     m.add_function(wrap_function!(no_parameters))?;
