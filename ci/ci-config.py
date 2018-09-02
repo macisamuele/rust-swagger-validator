@@ -41,9 +41,9 @@ class PythonVersion(Enum):
         if self == PythonVersion.PY27:
             return '2.7.15'
         elif self == PythonVersion.PY35:
-            return '3.5.5'
+            return '3.5.6'
         elif self == PythonVersion.PY36:
-            return '3.6.5'
+            return '3.6.6'
         elif self == PythonVersion.PY37:
             return '3.7.0'
         else:

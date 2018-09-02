@@ -35,13 +35,13 @@ matrix:
     env: TOXENV=py35
     python: '3.5'
   - os: osx
-    env: TOXENV=py35 PYTHON=3.5.5
+    env: TOXENV=py35 PYTHON=3.5.6
     language: generic
   - os: linux
     env: TOXENV=py36
     python: '3.6'
   - os: osx
-    env: TOXENV=py36 PYTHON=3.6.5
+    env: TOXENV=py36 PYTHON=3.6.6
     language: generic
   - os: linux
     env: TOXENV=py37
@@ -60,13 +60,13 @@ matrix:
     env: TOXENV=cargo_test
     python: '3.5'
   - os: osx
-    env: TOXENV=cargo_test PYTHON=3.5.5
+    env: TOXENV=cargo_test PYTHON=3.5.6
     language: generic
   - os: linux
     env: TOXENV=cargo_test
     python: '3.6'
   - os: osx
-    env: TOXENV=cargo_test PYTHON=3.6.5
+    env: TOXENV=cargo_test PYTHON=3.6.6
     language: generic
   - os: linux
     env: TOXENV=cargo_test
