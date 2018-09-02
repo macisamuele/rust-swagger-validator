@@ -36,12 +36,13 @@ macro_rules! panic_with_expected_loader_error {
                 stringify!($expression_to_panic)
             )
         };
+
         match $expression_to_panic {
             Err(error) => match error {
                 LoaderError::$expected_enum_type(inner_error) => {
-                    match $inner_error_check(inner_error) {
-                        Err(_) => throw_panic(),
-                        _ => {}
+                    let inner_check = $inner_error_check(inner_error);
+                    if inner_check.is_err() {
+                        throw_panic()
                     }
                 }
                 _ => throw_panic(),

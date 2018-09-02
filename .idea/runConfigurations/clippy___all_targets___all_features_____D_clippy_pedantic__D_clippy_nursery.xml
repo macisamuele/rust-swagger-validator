@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="clippy --all-targets --all-features -- -D clippy_pedantic -D clippy_nursery" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+    <option name="channel" value="DEFAULT" />
+    <option name="command" value="clippy --all-targets --all-features -- -D clippy_pedantic -D clippy_nursery" />
+    <option name="nocapture" value="true" />
+    <option name="backtrace" value="SHORT" />
+    <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+    <envs>
+      <env name="RUST_BACKTRACE" value="full" />
+    </envs>
+    <method v="2">
+      <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_touch rust/src/lib.rs" />
+    </method>
+  </configuration>
+</component>
