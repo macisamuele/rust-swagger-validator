@@ -20,22 +20,13 @@ environment:
   ALLOW_FAILURE: 'false'
   matrix:
   - PYTHON: C:\Python27-x64
-    TOXENV: py
+    TOXENV: py,cargo_test
   - PYTHON: C:\Python35-x64
-    TOXENV: py
+    TOXENV: py,cargo_test
   - PYTHON: C:\Python36-x64
-    TOXENV: py
+    TOXENV: py,cargo_test
   - PYTHON: C:\Python37-x64
-    TOXENV: py
-  - PYTHON: C:\Python27-x64
-    TOXENV: cargo_test
-    ALLOW_FAILURE: 'true'
-  - PYTHON: C:\Python35-x64
-    TOXENV: cargo_test
-  - PYTHON: C:\Python36-x64
-    TOXENV: cargo_test
-  - PYTHON: C:\Python37-x64
-    TOXENV: cargo_test
+    TOXENV: py,cargo_test
 
 build: off
 

@@ -26,58 +26,30 @@ matrix:
         - binutils-dev
         - libiberty-dev
   - os: linux
-    env: TOXENV=py27
+    env: TOXENV=py27,cargo_test
     python: '2.7'
   - os: osx
-    env: TOXENV=py27 PYTHON=2.7.15
+    env: TOXENV=py27,cargo_test PYTHON=2.7.15
     language: generic
   - os: linux
-    env: TOXENV=py35
+    env: TOXENV=py35,cargo_test
     python: '3.5'
   - os: osx
-    env: TOXENV=py35 PYTHON=3.5.6
+    env: TOXENV=py35,cargo_test PYTHON=3.5.6
     language: generic
   - os: linux
-    env: TOXENV=py36
+    env: TOXENV=py36,cargo_test
     python: '3.6'
   - os: osx
-    env: TOXENV=py36 PYTHON=3.6.6
+    env: TOXENV=py36,cargo_test PYTHON=3.6.6
     language: generic
   - os: linux
-    env: TOXENV=py37
+    env: TOXENV=py37,cargo_test
     python: '3.7'
     sudo: required
   - os: osx
-    env: TOXENV=py37 PYTHON=3.7.0
+    env: TOXENV=py37,cargo_test PYTHON=3.7.0
     language: generic
-  - os: linux
-    env: TOXENV=cargo_test ALLOW_FAILURE=true
-    python: '2.7'
-  - os: osx
-    env: TOXENV=cargo_test PYTHON=2.7.15 ALLOW_FAILURE=true
-    language: generic
-  - os: linux
-    env: TOXENV=cargo_test
-    python: '3.5'
-  - os: osx
-    env: TOXENV=cargo_test PYTHON=3.5.6
-    language: generic
-  - os: linux
-    env: TOXENV=cargo_test
-    python: '3.6'
-  - os: osx
-    env: TOXENV=cargo_test PYTHON=3.6.6
-    language: generic
-  - os: linux
-    env: TOXENV=cargo_test
-    python: '3.7'
-    sudo: required
-  - os: osx
-    env: TOXENV=cargo_test PYTHON=3.7.0
-    language: generic
-  allow_failures:
-  - env: TOXENV=cargo_test ALLOW_FAILURE=true
-  - env: TOXENV=cargo_test PYTHON=2.7.15 ALLOW_FAILURE=true
 
 install:
 - |
