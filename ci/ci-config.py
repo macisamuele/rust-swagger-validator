@@ -4,6 +4,7 @@ from enum import Enum
 from pathlib import Path
 from sys import maxsize
 from typing import Any
+from typing import cast
 from typing import DefaultDict
 from typing import List
 from typing import Mapping
@@ -165,19 +166,24 @@ class CI(Enum):
             raise RuntimeError('Unsupported CI')
 
     def write_configs(self, tasks: List[Mapping[str, str]], allowed_failures: List[Mapping[str, str]]) -> None:
-        ci_config = yaml.load(Path(__file__).resolve().parent / self.value[0])
-        if self == CI.APPVEYOR:
-            ci_config['environment']['matrix'] = tasks
-        elif self == CI.CIRCLECI:
-            raise NotImplementedError()
-        elif self == CI.TRAVISCI:
-            ci_config['matrix']['include'] = tasks
-            if allowed_failures:
-                ci_config['matrix']['allow_failures'] = allowed_failures
+        ci_configuration_file = Path(__file__).resolve().parent / self.value[1]
+        if not tasks:
+            if ci_configuration_file.exists():
+                ci_configuration_file.unlink()
         else:
-            raise RuntimeError('Unsupported CI')
+            ci_config = yaml.load(Path(__file__).resolve().parent / self.value[0])
+            if self == CI.APPVEYOR:
+                ci_config['environment']['matrix'] = tasks
+            elif self == CI.CIRCLECI:
+                raise NotImplementedError()
+            elif self == CI.TRAVISCI:
+                ci_config['matrix']['include'] = tasks
+                if allowed_failures:
+                    ci_config['matrix']['allow_failures'] = allowed_failures
+            else:
+                raise RuntimeError('Unsupported CI')
 
-        yaml.dump(ci_config, Path(__file__).resolve().parent / self.value[1])
+            yaml.dump(ci_config, ci_configuration_file)
 
 
 def generate_configs(config_path: str) -> None:
@@ -204,10 +210,12 @@ def generate_configs(config_path: str) -> None:
                         ci.get_allowed_failure(task),
                     )
 
-    for ci, tasks in tasks_ci_mapping.items():
-        if not tasks:
+    for ci in CI:
+        if ci == CI.CIRCLECI:
             continue
-        ci.write_configs(tasks, allowed_failures_ci_mapping[ci])
+        tasks = tasks_ci_mapping.get(ci, cast(List[Mapping[str, str]], []))
+        allowed_failures = allowed_failures_ci_mapping.get(ci, cast(List[Mapping[str, str]], {}))
+        ci.write_configs(tasks, allowed_failures)
 
 
 def validate_config(config_path: str) -> None:
