@@ -17,37 +17,19 @@ testing_environments:
 - os: [linux]
   python: '3.6'
   env: {TOXENV: coverage}
-# Python testing
+# Python and Rust testing
 - os: [linux, osx, windows]
   python: '2.7'
-  env: {TOXENV: py27}
+  env: {TOXENV: 'py27,cargo_test'}
 - os: [linux, osx, windows]
   python: '3.5'
-  env: {TOXENV: py35}
+  env: {TOXENV: 'py35,cargo_test'}
 - os: [linux, osx, windows]
   python: '3.6'
-  env: {TOXENV: py36}
+  env: {TOXENV: 'py36,cargo_test'}
 - os: [linux, osx, windows]
   python: '3.7'
-  env: {TOXENV: py37}
-
-# Rust testing
-- os: [linux, osx, windows]
-  python: '2.7'
-  env: {TOXENV: cargo_test}
-  # It's not clear but seems that on python2 cargo test fails
-  # NOTE: the library should be working as python tests already
-  # check for it. It has to be addressed before official release
-  allowed_failure: true
-- os: [linux, osx, windows]
-  python: '3.5'
-  env: {TOXENV: cargo_test}
-- os: [linux, osx, windows]
-  python: '3.6'
-  env: {TOXENV: cargo_test}
-- os: [linux, osx, windows]
-  python: '3.7'
-  env: {TOXENV: cargo_test}
+  env: {TOXENV: 'py37,cargo_test'}
 
 # Wheels generation
 # TODO

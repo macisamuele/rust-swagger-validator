@@ -8,11 +8,13 @@
 # Example of usage
 # $ docker run --rm -it -v $(pwd)/temp-dir:/host-dir --privileged rust-python:latest bash
 # # git checkout -f SHA
-# # cargo test --no-run
+# # cargo build --test --all-features
 # # kcov /host-dir $(find target/debug/ -maxdepth 1 -name rust_swagger_validator-* -executable)
 
 FROM ubuntu:bionic
 MAINTAINER "Samuele Maci <macisamuele@gmail.com>"
+
+ENV RUST_TOOLCHAIN=nightly-2018-08-31
 
 RUN set -eux && \
     apt-get update && \
@@ -40,9 +42,9 @@ RUN set -eux && \
     # Install tox
     pip3 install tox && \
     # Install cargo
-    curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --verbose -y && \
-    ${HOME}/.cargo/bin/rustup component add rustfmt-preview --toolchain nightly && \
-    ${HOME}/.cargo/bin/rustup component add clippy-preview --toolchain nightly
+    curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain ${RUST_TOOLCHAIN} --verbose -y && \
+    ${HOME}/.cargo/bin/rustup component add rustfmt-preview --toolchain ${RUST_TOOLCHAIN} && \
+    ${HOME}/.cargo/bin/rustup component add clippy-preview --toolchain ${RUST_TOOLCHAIN}
 
 RUN set -exu && \
     ln /usr/bin/python3 /usr/bin/python && \

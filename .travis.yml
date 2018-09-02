@@ -26,58 +26,30 @@ matrix:
         - binutils-dev
         - libiberty-dev
   - os: linux
-    env: TOXENV=py27
+    env: TOXENV=py27,cargo_test
     python: '2.7'
   - os: osx
-    env: TOXENV=py27 PYTHON=2.7.15
+    env: TOXENV=py27,cargo_test PYTHON=2.7.15
     language: generic
   - os: linux
-    env: TOXENV=py35
+    env: TOXENV=py35,cargo_test
     python: '3.5'
   - os: osx
-    env: TOXENV=py35 PYTHON=3.5.5
+    env: TOXENV=py35,cargo_test PYTHON=3.5.6
     language: generic
   - os: linux
-    env: TOXENV=py36
+    env: TOXENV=py36,cargo_test
     python: '3.6'
   - os: osx
-    env: TOXENV=py36 PYTHON=3.6.5
+    env: TOXENV=py36,cargo_test PYTHON=3.6.6
     language: generic
   - os: linux
-    env: TOXENV=py37
+    env: TOXENV=py37,cargo_test
     python: '3.7'
     sudo: required
   - os: osx
-    env: TOXENV=py37 PYTHON=3.7.0
+    env: TOXENV=py37,cargo_test PYTHON=3.7.0
     language: generic
-  - os: linux
-    env: TOXENV=cargo_test ALLOW_FAILURE=true
-    python: '2.7'
-  - os: osx
-    env: TOXENV=cargo_test PYTHON=2.7.15 ALLOW_FAILURE=true
-    language: generic
-  - os: linux
-    env: TOXENV=cargo_test
-    python: '3.5'
-  - os: osx
-    env: TOXENV=cargo_test PYTHON=3.5.5
-    language: generic
-  - os: linux
-    env: TOXENV=cargo_test
-    python: '3.6'
-  - os: osx
-    env: TOXENV=cargo_test PYTHON=3.6.5
-    language: generic
-  - os: linux
-    env: TOXENV=cargo_test
-    python: '3.7'
-    sudo: required
-  - os: osx
-    env: TOXENV=cargo_test PYTHON=3.7.0
-    language: generic
-  allow_failures:
-  - env: TOXENV=cargo_test ALLOW_FAILURE=true
-  - env: TOXENV=cargo_test PYTHON=2.7.15 ALLOW_FAILURE=true
 
 install:
 - |
@@ -110,33 +82,32 @@ install:
 - export PYTHONUNBUFFERED=1
 - pip install codecov tox-pip-extensions
 - |
-  # Initialize rust only if it is not already present
-  # NOTE: as this is cached it could be possible that we'll not be testing with the latest toolchain
-  if [ ! -d ${HOME}/.cargo/bin/ ]; then
-    curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly --verbose -y
+  # Define the default rust-toolchain to install
+  RUST_TOOLCHAIN=nightly
+  if [ "${TOXENV}" == "lint" ]; then
+    # Use "old" toolchain as clippy-preview component is not available on latest toolchain
+    export RUST_TOOLCHAIN=nightly-2018-08-31
   fi
+  export RUST_TOOLCHAIN
 - |
-  # Update rust components if min requirements are not satisfied
-  if ! python ./ci/min-rustc-installed.py; then
-    ${HOME}/.cargo/bin/rustup self update
-    ${HOME}/.cargo/bin/rustup update
-  fi
+  # Installing rust from sources is faster than caching it, additionally it removes the issue of using a "stale" nightly version
+  curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain none --verbose -y
+  export PATH=${HOME}/.cargo/bin:${PATH}
+  echo rustup install ${RUST_TOOLCHAIN}
+  rustup install ${RUST_TOOLCHAIN}
 - |
-  # Install rustfmt-preview component only if it is not alraedy installed (handle the case in which cache is empty)
-  if ! ${HOME}/.cargo/bin/rustup component list | grep -Eq '^rustfmt-preview[^ ]* +\(installed\)$'; then
-    ${HOME}/.cargo/bin/rustup component add rustfmt-preview --toolchain nightly
+  # Install rustfmt and clippy in case of lint tests
+  if [ "${TOXENV}" == "lint" ]; then
+    rustup component add rustfmt-preview --toolchain ${RUST_TOOLCHAIN}
+    rustup component add clippy-preview --toolchain ${RUST_TOOLCHAIN}
   fi
-- |
-  # Install rustfmt-preview component only if it is not alraedy installed (handle the case in which cache is empty)
-  if ! ${HOME}/.cargo/bin/rustup component list | grep -Eq '^clippy-preview[^ ]* +\(installed\)$'; then
-    ${HOME}/.cargo/bin/rustup component add clippy-preview --toolchain nightly
-  fi
-- export PATH=${HOME}/.cargo/bin:${PATH}
 - |
   # Install cargo-kcov dependencies (we don't need to do it in tox and keep it clean)
   if [ "${TRAVIS_OS_NAME}" == "linux" -a "${TOXENV}" == "coverage" ]; then
     command -v cargo-kcov &> /dev/null || cargo install cargo-kcov
     command -v kcov &> /dev/null || ( cargo kcov --print-install-kcov-sh | sh)
+    command -v cargo-kcov
+    command -v kcov
   fi
 
 before_script:
@@ -173,15 +144,12 @@ before_cache:
 
 cache:
   timeout: 3600
+  cargo: true
   ccache: true
   pip: true
   directories:
-  - ${HOME}/.cache/pip
   - ${HOME}/.cache/pip-faster
   - ${HOME}/.cache/pre-commit
-  - ${HOME}/.cargo/
-  - ${HOME}/.rustup/
-  - ${TRAVIS_BUILD_DIR}/target
   - ${TRAVIS_BUILD_DIR}/kcov-v*
   # Caching of homebrew dependencies
   - ${HOME}/Library/Caches/Homebrew

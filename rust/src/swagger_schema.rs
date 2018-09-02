@@ -45,12 +45,12 @@ enum_with_automatic_from_trait_implementation!(
 );
 
 impl SwaggerSchema {
-    pub fn new_from_url(url: &str) -> Result<SwaggerSchema, SwaggerSchemaError> {
-        SwaggerSchema::new_from_content(load_from_url(url, None)?, Option::from(Url::parse(url)?))
+    pub fn new_from_url(url: &str) -> Result<Self, SwaggerSchemaError> {
+        Self::new_from_content(load_from_url(url, None)?, Option::from(Url::parse(url)?))
     }
 
-    pub fn new_from_path(path: &str) -> Result<SwaggerSchema, SwaggerSchemaError> {
-        SwaggerSchema::new_from_content(
+    pub fn new_from_path(path: &str) -> Result<Self, SwaggerSchemaError> {
+        Self::new_from_content(
             load_from_path(path, None)?,
             Option::from(Url::from_file_path(path::Path::new(path).canonicalize()?).unwrap()),
         )
@@ -59,9 +59,9 @@ impl SwaggerSchema {
     pub fn new_from_content(
         swagger_spec: Value,
         url: Option<Url>,
-    ) -> Result<SwaggerSchema, SwaggerSchemaError> {
-        let draft4_schema = load_from_path(&"schema/draft4.json", None)?;
-        let swagger_20_schema = load_from_path(&"schema/swagger2.0.json", None)?;
+    ) -> Result<Self, SwaggerSchemaError> {
+        let draft4_schema = load_from_path("schema/draft4.json", None)?;
+        let swagger_20_schema = load_from_path("schema/swagger2.0.json", None)?;
 
         let mut new_scope = json_schema::Scope::new();
         let _ = new_scope.compile(draft4_schema, true)?;
@@ -75,7 +75,7 @@ impl SwaggerSchema {
                 url.clone(),
                 schema::CompilationSettings::new(&json_schema::keywords::default(), false),
             )?;
-            Ok(SwaggerSchema {
+            Ok(Self {
                 uri: url,
                 schema: swagger_schema,
             })

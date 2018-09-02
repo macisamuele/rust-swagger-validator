@@ -1,6 +1,6 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v1.3.0
+  rev: v1.4.0
   hooks:
   - id: check-merge-conflict
   - id: trailing-whitespace
@@ -25,7 +25,7 @@ repos:
   - id: check-byte-order-marker
   - id: requirements-txt-fixer
 - repo: https://github.com/asottile/reorder_python_imports
-  rev: v0.3.5
+  rev: v1.1.0
   hooks:
   - id: reorder-python-imports
     language_version: python3.6
@@ -38,7 +38,7 @@ repos:
     - --py36-plus
     exclude: ^(ci/.*)$
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-  rev: 0eb66ec09c1089c84c92c22cbca6aa2b6edbe287
+  rev: v1.1.3
   hooks:
   - id: pretty-format-rust
     args: [--autofix]
