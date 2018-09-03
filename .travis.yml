@@ -50,6 +50,15 @@ matrix:
   - os: osx
     env: TOXENV=py37,cargo_test PYTHON=3.7.0
     language: generic
+  - os: linux
+    env: TOXENV=py36-release ALLOW_FAILURE=true
+    python: '3.6'
+  - os: osx
+    env: TOXENV=py36-release PYTHON=3.6.6 ALLOW_FAILURE=true
+    language: generic
+  allow_failures:
+  - env: TOXENV=py36-release ALLOW_FAILURE=true
+  - env: TOXENV=py36-release PYTHON=3.6.6 ALLOW_FAILURE=true
 
 install:
 - |
