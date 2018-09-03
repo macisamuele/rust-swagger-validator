@@ -1,5 +1,7 @@
 // Features required due to pyo3 -> https://github.com/PyO3/pyo3/issues/5 and https://github.com/PyO3/pyo3/issues/210
 #![feature(extern_prelude, specialization)]
+// Features required due to scoped clippy lints
+#![feature(tool_lints)]
 #![deny(
     anonymous_parameters,
     bad_style,
