@@ -18,6 +18,11 @@ matrix:
 # Available python versions and their locations on https://www.appveyor.com/docs/build-environment/#python
 environment:
   ALLOW_FAILURE: 'false'
+  MSSdk: '1'                # Enable Microsoft sdk build (*-windows-msvc target)
+  PYTHONUNBUFFERED: '1'     # disable python buffering, output come as it is generated
+  RUST_BACKTRACE: full      # Rust build are verbose
+  RUST_TOOLCHAIN: nightly   # Rust toolchain to install
+  SCCACHE_VERSION: 0.2.7    # sccache version to install
   matrix:
   - PYTHON: C:\Python27-x64
     TOXENV: py,cargo_test
@@ -35,29 +40,46 @@ environment:
     TOXENV: py-release
     CACHE_KEY: OS.WINDOWS-PythonVersion.PY36-py-release
     ALLOW_FAILURE: 'true'
+  # # Make build very verbose
+  # SET CARGO_EXTRA_ARGS: --verbose
+  # SET PIP_EXTRA_ARGS: --verbose
 
 build: off
 
 install:
-- cmd: SET RUST_BACKTRACE=full  # Rust build are verbose
-- cmd: SET PYTHONUNBUFFERED=1  # disable python buffering, output come as it is generated
+# Enable 64-bits compiler (code inspired from https://packaging.python.org/guides/supporting-windows-using-appveyor/#testing-with-tox)
+- cmd: CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64   # build native x64 on x64 machines -> modify this to publish x86 wheels
+
+# Set Python in Path and Lib
 - cmd: SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
+- cmd: SET LIB=%PYTHON%\Lib;%LIB%
+
 # TODO: remove virtualenv install from personal repo once https://github.com/pypa/virtualenv/pull/1023 is merged
 - cmd: python -m pip install -U https://github.com/macisamuele/virtualenv/archive/maci-pr-1023-backport.zip
-- cmd: python -m pip install -U pip codecov tox
+- cmd: python -m pip install -U pip codecov tox wheel
+
 # Install rust dependencies
-- cmd: IF NOT EXIST %USERPROFILE%\.cargo ( appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe && rustup-init --default-toolchain nightly --verbose -y )
+- cmd: IF NOT EXIST %USERPROFILE%\.cargo (appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe && rustup-init --default-host x86_64-pc-windows-msvc --default-toolchain nightly --verbose -y)
 # Update rust components if min requirements are not satisfied
 - cmd: python ci\min-rustc-installed.py || (%USERPROFILE%\.cargo\bin\rustup self update && %USERPROFILE%\.cargo\bin\rustup update)
 - cmd: SET PATH=%USERPROFILE%\.cargo\bin;%PATH%
 
+# Install and start sccache
+- cmd: SET SCCACHE_FILE_NAME=sccache-%SCCACHE_VERSION%-x86_64-pc-windows-msvc
+- cmd: appveyor DownloadFile https://github.com/mozilla/sccache/releases/download/%SCCACHE_VERSION%/%SCCACHE_FILE_NAME%.tar.gz -FileName %TMP%\%SCCACHE_FILE_NAME%.tar.gz
+- cmd: 7z e %TMP%\%SCCACHE_FILE_NAME%.tar.gz -o%TMP%
+- cmd: 7z e -ttar %TMP%\%SCCACHE_FILE_NAME%.tar -o%TMP%
+- cmd: mkdir %USERPROFILE%\sccache
+- cmd: mv %TMP%\sccache.exe %USERPROFILE%\sccache
+- cmd: SET PATH=%USERPROFILE%\sccache;%PATH%
+- cmd: sccache --start-server
+# - cmd: SET RUSTC_WRAPPER=sccache
+
 before_test:
-# Enable 64-bits compiler (code inspired from https://packaging.python.org/guides/supporting-windows-using-appveyor/#testing-with-tox)
-- cmd: CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64   # build native x64 on x64 machines -> modify this to publish x86 wheels
-- cmd: SET MSSdk=1
-- cmd: SET LIB=%PYTHON%\Lib;%LIB%
 - cmd: SET TOX_TESTENV_PASSENV=INCLUDE LIB LIBPATH MSSDK PATH PATHEXT VISUALSTUDIOVERSION
 # Print versions of the interesting tools
+- cmd: rustup --version
+- cmd: rustup show
 - cmd: rustc --version --verbose
 - cmd: cargo --version --verbose
 - cmd: python -c "import sys;print(sys.version)"
@@ -68,12 +90,12 @@ test_script:
 - cmd: tox
 
 cache:
-- '%USERPROFILE%\AppData\Local\pip\'
+- '%USERPROFILE%\AppData\Local\pip'
 - '%USERPROFILE%\AppData\Local\wheel'
+- '%USERPROFILE%\AppData\Local\Mozilla\sccache'
 - '%USERPROFILE%\.cargo\'
 - '%USERPROFILE%\.rustup\'
 - '%APPVEYOR_BUILD_FOLDER%\target'
-
 
 notifications:
 - provider: Slack
@@ -82,6 +104,8 @@ notifications:
     secure: wN2af6BR8QTbUaIK7ytZx8kzVOEOUUIhvWP1IjVnAG8Wa3QYC1PaOzF1ro0vUerRPjE7kYtSHqJ2/v0kFIyJ2AETJcN1Z7oLsIX199EYANI=
 
 on_finish:
+# Print caching information
+- cmd: sccache --show-stats
 # Print build.rs so we could expose information related to rust build
 - sh: find target/*/build/rust_swagger_validator-*/out/built.rs | while read path; do echo ${path} && cat ${path} && echo && echo; done
 
@@ -89,5 +113,5 @@ on_finish:
 init:
 - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 # Uncomment the lines below to allow debuggins via Remote desktop
-#on_failure:
-#- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+on_failure:
+- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
