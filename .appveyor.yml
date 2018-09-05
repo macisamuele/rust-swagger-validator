@@ -21,14 +21,19 @@ environment:
   matrix:
   - PYTHON: C:\Python27-x64
     TOXENV: py,cargo_test
+    CACHE_KEY: OS.WINDOWS-PythonVersion.PY27-py,cargo_test
   - PYTHON: C:\Python35-x64
     TOXENV: py,cargo_test
+    CACHE_KEY: OS.WINDOWS-PythonVersion.PY35-py,cargo_test
   - PYTHON: C:\Python36-x64
     TOXENV: py,cargo_test
+    CACHE_KEY: OS.WINDOWS-PythonVersion.PY36-py,cargo_test
   - PYTHON: C:\Python37-x64
     TOXENV: py,cargo_test
+    CACHE_KEY: OS.WINDOWS-PythonVersion.PY37-py,cargo_test
   - PYTHON: C:\Python36-x64
     TOXENV: py-release
+    CACHE_KEY: OS.WINDOWS-PythonVersion.PY36-py-release
     ALLOW_FAILURE: 'true'
 
 build: off
