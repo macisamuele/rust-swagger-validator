@@ -28,7 +28,7 @@ environment:
   - PYTHON: C:\Python37-x64
     TOXENV: py,cargo_test
   - PYTHON: C:\Python36-x64
-    TOXENV: py36-release
+    TOXENV: py-release
     ALLOW_FAILURE: 'true'
 
 build: off

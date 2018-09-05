@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from collections import defaultdict
 from enum import Enum
 from pathlib import Path
+from re import sub
 from sys import maxsize
 from typing import Any
 from typing import cast
@@ -61,18 +62,6 @@ class PythonVersion(Enum):
         else:
             raise RuntimeError('Unsupported PythonVersion')
 
-    def tox_py_target(self):
-        if self == PythonVersion.PY27:
-            return 'py27'
-        elif self == PythonVersion.PY35:
-            return 'py35'
-        elif self == PythonVersion.PY36:
-            return 'py36'
-        elif self == PythonVersion.PY37:
-            return 'py37'
-        else:
-            raise RuntimeError('Unsupported PythonVersion')
-
 
 class CI(Enum):
     APPVEYOR = ('appveyor_template.yaml', '../.appveyor.yml')
@@ -100,7 +89,7 @@ class CI(Enum):
                 # of the same interpreter (32 and 64 bits). By using py (with no version specifier)
                 # tox will use the same python interpreter that executes tox
                 # https://packaging.python.org/guides/supporting-windows-using-appveyor/#testing-with-tox
-                'py' if toxenv == python_version.tox_py_target() else toxenv
+                sub('py\d\d', 'py', toxenv)
                 for toxenv in env['TOXENV'].split(',')
             )
 
