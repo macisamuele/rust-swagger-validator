@@ -73,7 +73,7 @@ install:
 - cmd: mv %TMP%\sccache.exe %USERPROFILE%\sccache
 - cmd: SET PATH=%USERPROFILE%\sccache;%PATH%
 - cmd: sccache --start-server
-# - cmd: SET RUSTC_WRAPPER=sccache
+- cmd: SET RUSTC_WRAPPER=sccache
 
 before_test:
 - cmd: SET TOX_TESTENV_PASSENV=INCLUDE LIB LIBPATH MSSDK PATH PATHEXT VISUALSTUDIOVERSION
