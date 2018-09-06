@@ -135,7 +135,7 @@ install:
     tar -xz -C ${TMP_DIR}
   export PATH=${TMP_DIR}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}:${PATH}
   sccache --start-server
-#  export RUSTC_WRAPPER=sccache
+  export RUSTC_WRAPPER=sccache
 - |
   if [ "${TRAVIS_OS_NAME}" == "linux" -a "${TOXENV}" == "coverage" ]; then
     # Install cargo-kcov dependencies (we don't need to do it in tox and keep it clean)
