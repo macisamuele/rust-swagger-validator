@@ -14,8 +14,9 @@
 /.pytest_cache/
 /.rust_coverage/
 /.tox/
-/Cargo.lock
 /build/
+/Cargo.lock
+/ci/travis_token.txt
 /dist/
 /kcov-v*/
 /target

@@ -30,6 +30,10 @@ testing_environments:
 - os: [linux, osx, windows]
   python: '3.7'
   env: {TOXENV: 'py37,cargo_test'}
+- os: [linux, osx, windows]
+  python: '3.6'
+  env: {TOXENV: py36-release}
+  allowed_failure: true
 
 # Wheels generation
 # TODO

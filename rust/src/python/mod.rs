@@ -11,7 +11,7 @@
 #![cfg_attr(
     feature = "cargo-clippy",
 // Allow lints that will fail due to PyO3
-    allow(cast_ptr_alignment, transmute_ptr_to_ptr)
+    allow(clippy::cast_ptr_alignment, clippy::transmute_ptr_to_ptr)
 )]
 
 use pyo3::prelude::*;
