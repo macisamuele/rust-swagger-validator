@@ -25,12 +25,15 @@ ${SCRIPT_DIR}/travis_token.txt
 fi
 
 curl \
+    --silent \
+    --verbose \
     --request POST \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --header "Travis-API-Version: 3" \
     --header "Authorization: token ${travisToken}" \
     --data "{\"quiet\": true}" \
-    https://api.travis-ci.com/job/${travisBuildId}/debug
+    https://api.travis-ci.com/job/${travisBuildId}/debug &> /dev/stdout | \
+    sed -r "s/${travisToken}/TRAVIS_TOKEN/g"
 
 popd
