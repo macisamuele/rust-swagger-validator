@@ -16,6 +16,7 @@
 /.tox/
 /build/
 /Cargo.lock
+/ci/appveyor_token.txt
 /ci/travis_token.txt
 /dist/
 /kcov-v*/
