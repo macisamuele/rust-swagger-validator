@@ -11,18 +11,15 @@ if [ $# -ne 1 ]; then
 fi
 travisBuildId="$1"
 
-if [ -f travis_token.txt ]; then
-    travisToken="$(cat travis_token.txt)"
-else
-    echo "
-You can avoid writing the token all the times by writing it once in
-${SCRIPT_DIR}/travis_token.txt
-(be aware that the file should not be  committed on the repository)
-" > /dev/stderr
-    read -s -p "Introduce travis token
-    NOTE: no characters will be visible while typing to protect your password length
-" travisToken
+if ! command -v travis &> /dev/null; then
+    echo "travis CLI tool is required for $0 to work.
+    Please install it and add it to your path.
+    Documentation on https://github.com/travis-ci/travis.rb
+    Tip: on Mac OS you can run \`brew install travis\`" > /dev/stderr
+    exit 1
 fi
+
+travisToken=$(travis token --pro --no-interactive)
 
 curl \
     --silent \
