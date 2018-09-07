@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="clippy --all-targets --all-features -- -D clippy_pedantic -D clippy_nursery" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+  <configuration default="false" name="clippy --all-targets --all-features -- -D clippy::pedantic -D clippy::nursery" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
     <option name="channel" value="DEFAULT" />
-    <option name="command" value="clippy --all-targets --all-features -- -D clippy_pedantic -D clippy_nursery" />
+    <option name="command" value="clippy --all-targets --all-features -- -D clippy::pedantic -D clippy::nursery" />
     <option name="nocapture" value="true" />
     <option name="backtrace" value="SHORT" />
     <option name="workingDirectory" value="file://$PROJECT_DIR$" />
