@@ -178,13 +178,13 @@ before_cache:
 # Don't cache crate registry, it's going to change every time and so cache will be invalidated and regenerated too often
 - rm -rf ${HOME}/.cargo/registry/index/
 # Print size statistics of cached directories (hopefully those are kept in sync with #/cache/directories)
-- du -sh ${HOME}/.ccache ${HOME}/.sccache ${HOME}/.cache/pip ${HOME}/.cache/pip-faster ${HOME}/.cache/pre-commit ${HOME}/.cargo ${HOME}/.rustup ${SCCACHE_DIR} ${TRAVIS_BUILD_DIR}/kcov-v* ${HOME}/Library/Caches/Homebrew ${BREW_HOME} ${HOME}/.pyenv/
+- du -sh ${HOME}/.ccache ${HOME}/.sccache_* ${HOME}/.cache/pip ${HOME}/.cache/pip-faster ${HOME}/.cache/pre-commit ${HOME}/.cargo ${HOME}/.rustup ${SCCACHE_DIR} ${TRAVIS_BUILD_DIR}/kcov-v* ${HOME}/Library/Caches/Homebrew ${BREW_HOME} ${HOME}/.pyenv/
 
 cache:
   timeout: 3600
   directories:
   - ${HOME}/.ccache
-  - ${HOME}/.sccache
+  - ${HOME}/.sccache_*
   - ${HOME}/.cache/pip
   - ${HOME}/.cache/pip-faster
   - ${HOME}/.cache/pre-commit
