@@ -44,6 +44,30 @@ default: &default_job
         sudo apt-get install -y --no-install-recommends cmake
 
   - run:
+      name: Save Git Information for caching
+      command: |
+        set -eux
+        REMOTE_NAME=$(git show-ref HEAD | sed -r 's@^[^ ]+ refs/remotes/([^/]+)/HEAD@\1@')
+        # Command retrieved from https://stackoverflow.com/a/17843908
+        POSSIBLE_ANCESTOR_BRANCH=$(git show-branch -a | \
+          grep '*' | \
+          grep -v $(git rev-parse --abbrev-ref HEAD) | \
+          head -n1 | \
+          sed -r 's@.*\[(.*)\].*@\1@' | \
+          sed 's/[\^~].*//' | \
+          sed "s@^${REMOTE_NAME}/@@"
+        )
+        # NOTE: Is mentioned POSSIBLE as in case of "master" branch a child branch could be returned
+        #       For the specific case of caching that would not represent an issue
+        echo "export POSSIBLE_ANCESTOR_BRANCH=${POSSIBLE_ANCESTOR_BRANCH}" >> ${BASH_ENV}
+
+  - restore_cache:
+      keys:
+      - v1-cache-{{ arch }}-{{ .Branch }}-{{ .Environment.TOXENV }}
+      # In case of current branch cache miss try to load the cache of the parent branch
+      - v1-cache-{{ arch }}-{{ .Environment.POSSIBLE_ANCESTOR_BRANCH }}-{{ .Environment.TOXENV }}
+
+  - run:
       name: Install Rust from Sources
       command: |
         set -eux
@@ -116,6 +140,16 @@ default: &default_job
       name: Run tox
       command: |
         tox
+
+  - save_cache:
+      paths:
+      - ~/workdir/target
+      - ~/.cache/pip
+      - ~/.cache/pip-faster
+      - ~/.cache/pre-commit
+      - ~/.cargo
+      - ~/.sccache
+      key: v1-cache-{{ arch }}-{{ .Branch }}-{{ .Environment.TOXENV }}
 
 # sccache is not currently installed
 #   - run:
