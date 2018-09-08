@@ -4,13 +4,13 @@ version: 2
 
 default: &default_job
   # Default job template
-  # All the jobs "extending" should be defining the executor and environmental variables
+  # All the jobs "extending" should be defining the executor and environment variables
   working_directory: ~/workdir/
   steps:
   - checkout
 
   - run:
-      name: Set Environmental Variables
+      name: Set Environment Variables
       # https://circleci.com/docs/2.0/env-vars/#using-bash_env-to-set-environment-variables
       command: |
         echo '
@@ -29,6 +29,10 @@ default: &default_job
           export PATH=${HOME}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}:${PATH}
         ' >> ${BASH_ENV}
 
+        env | grep -vE "^(CIRCLE|HOSTNAME|GPG_KEY|BASH_ENV|SSH_AUTH_SOCK)" > ${HOME}/workdir/.env
+        echo "Environment variables used in the cache key"
+        cat ${HOME}/workdir/.env
+
   - run:
       name: Fix cargo registry fetch issue
       command: |
@@ -45,9 +49,11 @@ default: &default_job
 
   - restore_cache:
       keys:
-      - v2-cache-{{ arch }}-{{ .Environment.TOXENV }}-{{ .Branch }}
-      # In case of current branch cache miss try to load the cache of the parent branch
-      - v2-cache-{{ arch }}-{{ .Environment.TOXENV }}
+      - v2-cache-{{ arch }}-{{ .Branch }}-{{ checksum "~/workdir/.env" }}-{{ .Environment.CIRCLE_SHA1 }}
+      - v2-cache-{{ arch }}-{{ .Branch }}-{{ checksum "~/workdir/.env" }}
+      - v2-cache-{{ arch }}-master-{{ checksum "~/workdir/.env" }}
+      - v2-cache-{{ arch }}-master
+      - v2-cache-{{ arch }}
 
   - run:
       name: Install Rust from Sources
@@ -84,8 +90,6 @@ default: &default_job
 #   - run:
 #       name: Install sccache
 #       command: |
-#         SSCACHE_VERSION=0.2.7
-#         HOST_TRIPLETE=x86_64-unknown-linux-musl
 #         curl --silent --fail --show-error --location --retry 3 \
 #           https://github.com/mozilla/sccache/releases/download/${SSCACHE_VERSION}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}.tar.gz | \
 #             tar -xz -C ${HOME}
@@ -131,7 +135,7 @@ default: &default_job
       - ~/.cache/pre-commit
       - ~/.cargo
       - ~/.sccache
-      key: v2-cache-{{ arch }}-{{ .Branch }}-{{ .Environment.TOXENV }}-{{ .Environment.CIRCLE_SHA1 }}
+      key: v2-cache-{{ arch }}-{{ .Branch }}-{{ checksum "~/workdir/.env" }}-{{ .Environment.CIRCLE_SHA1 }}
 
 # sccache is not currently installed
 #   - run:
