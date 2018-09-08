@@ -63,9 +63,9 @@ default: &default_job
 
   - restore_cache:
       keys:
-      - v1-cache-{{ arch }}-{{ .Branch }}-{{ .Environment.TOXENV }}
+      - v2-cache-{{ arch }}-{{ .Branch }}-{{ .Environment.TOXENV }}
       # In case of current branch cache miss try to load the cache of the parent branch
-      - v1-cache-{{ arch }}-{{ .Environment.POSSIBLE_ANCESTOR_BRANCH }}-{{ .Environment.TOXENV }}
+      - v2-cache-{{ arch }}-{{ .Environment.POSSIBLE_ANCESTOR_BRANCH }}-{{ .Environment.TOXENV }}
 
   - run:
       name: Install Rust from Sources
@@ -149,7 +149,7 @@ default: &default_job
       - ~/.cache/pre-commit
       - ~/.cargo
       - ~/.sccache
-      key: v1-cache-{{ arch }}-{{ .Branch }}-{{ .Environment.TOXENV }}
+      key: v2-cache-{{ arch }}-{{ .Branch }}-{{ .Environment.TOXENV }}
 
 # sccache is not currently installed
 #   - run:
