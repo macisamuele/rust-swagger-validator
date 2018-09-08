@@ -16,6 +16,8 @@ default: &default_job
         echo '
           export PYTHONUNBUFFERED=1           # disable python buffering, output come as it is generated
           export RUST_BACKTRACE=full          # Rust build are verbose
+          # Override the default toolchain as clippy-preview component could not available on latest toolchain (please do it only on TOXENV=lint job)
+
           export RUST_TOOLCHAIN=nightly       # Rust toolchain to install
           export SCCACHE_DIR=${HOME}/.sccache # sscache cache directory
           export SSCACHE_VERSION=0.2.7        # sscache version to install
@@ -50,14 +52,34 @@ default: &default_job
         ${HOME}/.cargo/bin/rustup install nightly
 
   - run:
-      name: Install sccache
+      name: Install lint dependencies (if needed)
       command: |
-        SSCACHE_VERSION=0.2.7
-        HOST_TRIPLETE=x86_64-unknown-linux-musl
-        curl --silent --fail --show-error --location --retry 3 \
-          https://github.com/mozilla/sccache/releases/download/${SSCACHE_VERSION}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}.tar.gz | \
-            tar -xz -C ${HOME}
-        ${HOME}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}/sccache --start-server
+        set -eux
+        if [ "${TOXENV}" == "lint" ]; then
+          # Install rustfmt and clippy in case of lint tests
+          rustup component add rustfmt-preview --toolchain ${RUST_TOOLCHAIN}
+          rustup component add clippy-preview --toolchain ${RUST_TOOLCHAIN}
+        fi
+
+  - run:
+      name: Install coverage dependencies (if needed)
+      command: |
+        if [ "${TOXENV}" == "coverage" ]; then
+          # Install cargo-kcov dependencies (we don't need to do it in tox and keep it clean)
+          command -v cargo-kcov &> /dev/null || cargo install cargo-kcov
+          command -v kcov &> /dev/null || ( cargo kcov --print-install-kcov-sh | sh)
+        fi
+
+# Currently sccache is disabled as CircleCI seems to be really fast and as running with sccache enable break the build on CircleCI only
+#   - run:
+#       name: Install sccache
+#       command: |
+#         SSCACHE_VERSION=0.2.7
+#         HOST_TRIPLETE=x86_64-unknown-linux-musl
+#         curl --silent --fail --show-error --location --retry 3 \
+#           https://github.com/mozilla/sccache/releases/download/${SSCACHE_VERSION}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}.tar.gz | \
+#             tar -xz -C ${HOME}
+#         ${HOME}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}/sccache --start-server
 
   - run:
       name: Install Python Dependencies
@@ -77,6 +99,7 @@ default: &default_job
         pip --version
         tox --version
 
+# sccache is not currently installed
 #   - run:
 #       name: Enable sccache
 #       # https://circleci.com/docs/2.0/env-vars/#using-bash_env-to-set-environment-variables
@@ -90,10 +113,11 @@ default: &default_job
       command: |
         tox
 
-  - run:
-      name: sccache Statistics
-      command: |
-        sccache --show-stats
+# sccache is not currently installed
+#   - run:
+#       name: sccache Statistics
+#       command: |
+#         sccache --show-stats
 
 workflows:
   version: 2
