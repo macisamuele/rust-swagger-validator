@@ -93,8 +93,12 @@ install:
 - |
   if [ "${TRAVIS_OS_NAME}" == "linux" -a "${TOXENV}" == "coverage" ]; then
     # Install cargo-kcov dependencies (we don't need to do it in tox and keep it clean)
+    TMP_DIR=$(mktemp -d)
+    cd ${TMP_DIR}
     command -v cargo-kcov &> /dev/null || cargo install cargo-kcov
     command -v kcov &> /dev/null || ( cargo kcov --print-install-kcov-sh | sh)
+    cd -
+    rm -rf ${TMP_DIR}
   fi
 
 before_script:
