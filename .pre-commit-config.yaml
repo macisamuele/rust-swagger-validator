@@ -68,4 +68,4 @@ repos:
     - --validate  # This is ignored for now but has to be addressed
     - --generate
     pass_filenames: false
-    files: ^(ci/.*|\.travis\.yml|\.appveyor\.yml|\.circleci/config\.yaml)$
+    files: ^(ci/.*|\.travis\.yml|\.appveyor\.yml|\.circleci/config\.yml)$

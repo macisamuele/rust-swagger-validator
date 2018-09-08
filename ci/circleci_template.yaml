@@ -14,6 +14,8 @@ default:
       # https://circleci.com/docs/2.0/env-vars/#using-bash_env-to-set-environment-variables
       command: |
         echo '
+          export ALLOW_FAILURE=${ALLOW_FAILURE:-false}
+
           export PYTHONUNBUFFERED=1           # disable python buffering, output come as it is generated
           export RUST_BACKTRACE=full          # Rust build are verbose
           # Override the default toolchain as clippy-preview component could not available on latest toolchain (please do it only on TOXENV=lint job)
@@ -37,7 +39,7 @@ default:
       name: Fix cargo registry fetch issue
       command: |
         # git config --global url."ssh://git@github.com/".insteadOf "https://github.com/" || true
-        git config --global --unset url."ssh://git@github.com/".insteadOf || true
+        git config --global --unset url."ssh://git@github.com".insteadOf || true
         git config --global --list || true
 
   - run:
@@ -125,7 +127,11 @@ default:
   - run:
       name: Run tox
       command: |
-        tox
+        if [ "${ALLOW_FAILURE}" == "true" ]; then
+          tox || echo "tox failed and exited with status $?"
+        else
+          tox
+        fi
 
   - save_cache:
       paths:

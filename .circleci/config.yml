@@ -1,12 +1,12 @@
-# TODO: add caching system
-# TODO: fix templating as for travis and appveyor
+# Please make sure to only modify the template file and not the generated ones.
+# Check ${GIT_REPO_ROOT}/ci/gi-config.py too verify how the template is used.
 version: 2
 
-default: &default_job
+default:
   # Default job template
   # All the jobs "extending" should be defining the executor and environment variables
   working_directory: ~/workdir/
-  steps:
+  steps: &id001
   - checkout
 
   - run:
@@ -14,6 +14,8 @@ default: &default_job
       # https://circleci.com/docs/2.0/env-vars/#using-bash_env-to-set-environment-variables
       command: |
         echo '
+          export ALLOW_FAILURE=${ALLOW_FAILURE:-false}
+
           export PYTHONUNBUFFERED=1           # disable python buffering, output come as it is generated
           export RUST_BACKTRACE=full          # Rust build are verbose
           # Override the default toolchain as clippy-preview component could not available on latest toolchain (please do it only on TOXENV=lint job)
@@ -37,7 +39,7 @@ default: &default_job
       name: Fix cargo registry fetch issue
       command: |
         # git config --global url."ssh://git@github.com/".insteadOf "https://github.com/" || true
-        git config --global --unset url."ssh://git@github.com/".insteadOf || true
+        git config --global --unset url."ssh://git@github.com".insteadOf || true
         git config --global --list || true
 
   - run:
@@ -80,8 +82,8 @@ default: &default_job
           # Install cargo-kcov dependencies (we don't need to do it in tox and keep it clean)
           TMP_DIR=$(mktemp -d)
           cd ${TMP_DIR}
-          command -v cargo-kcov &> /dev/null || cargo install cargo-kcov
-          command -v kcov &> /dev/null || ( cargo kcov --print-install-kcov-sh | sh)
+          command -v cargo-kcov &> /dev/null || cargo +${RUST_TOOLCHAIN} install cargo-kcov
+          command -v kcov &> /dev/null || ( cargo +${RUST_TOOLCHAIN} kcov --print-install-kcov-sh | sh)
           cd -
           rm -rf ${TMP_DIR}
         fi
@@ -125,7 +127,11 @@ default: &default_job
   - run:
       name: Run tox
       command: |
-        tox
+        if [ "${ALLOW_FAILURE}" == "true" ]; then
+          tox || echo "tox failed and exited with status $?"
+        else
+          tox
+        fi
 
   - save_cache:
       paths:
@@ -147,22 +153,57 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-    - python-3.5
-    - python-3.6
+    - lint
+    - coverage
+    - cargo_test,py27
+    - cargo_test,py35
+    - cargo_test,py36
+    - cargo_test,py37
+    - py36-release
 
 jobs:
-  python-3.6:  # All the job could be templated
-    <<: *default_job
+  lint:
+    working_directory: ~/workdir/
+    steps: *id001
     docker:
     - image: circleci/python:3.6.6
-
-    environment:
-      TOXENV: cargo_test,py36
-
-  python-3.5:  # All the job could be templated
-    <<: *default_job
+    environment: {TOXENV: lint, CACHE_KEY: OS.LINUX-PythonVersion.PY36-lint}
+  coverage:
+    working_directory: ~/workdir/
+    steps: *id001
+    docker:
+    - image: circleci/python:3.6.6
+    environment: {TOXENV: coverage, CACHE_KEY: OS.LINUX-PythonVersion.PY36-coverage}
+  cargo_test,py27:
+    working_directory: ~/workdir/
+    steps: *id001
+    docker:
+    - image: circleci/python:2.7.15
+    environment: {TOXENV: 'cargo_test,py27', CACHE_KEY: 'OS.LINUX-PythonVersion.PY27-cargo_test,py27'}
+  cargo_test,py35:
+    working_directory: ~/workdir/
+    steps: *id001
     docker:
     - image: circleci/python:3.5.6
-
+    environment: {TOXENV: 'cargo_test,py35', CACHE_KEY: 'OS.LINUX-PythonVersion.PY35-cargo_test,py35'}
+  cargo_test,py36:
+    working_directory: ~/workdir/
+    steps: *id001
+    docker:
+    - image: circleci/python:3.6.6
+    environment: {TOXENV: 'cargo_test,py36', CACHE_KEY: 'OS.LINUX-PythonVersion.PY36-cargo_test,py36'}
+  cargo_test,py37:
+    working_directory: ~/workdir/
+    steps: *id001
+    docker:
+    - image: circleci/python:3.7.0
+    environment: {TOXENV: 'cargo_test,py37', CACHE_KEY: 'OS.LINUX-PythonVersion.PY37-cargo_test,py37'}
+  py36-release:
+    working_directory: ~/workdir/
+    steps: *id001
+    docker:
+    - image: circleci/python:3.6.6
     environment:
-      TOXENV: cargo_test,py35
+      TOXENV: py36-release
+      CACHE_KEY: OS.LINUX-PythonVersion.PY36-py36-release
+      ALLOW_FAILURE: 'true'
