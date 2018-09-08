@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from collections import defaultdict
+from copy import deepcopy
 from enum import Enum
 from pathlib import Path
 from re import sub
@@ -80,9 +81,10 @@ class CI(Enum):
         self,
         python_version: PythonVersion,
         os: OS,
-        env: MutableMapping[str, str],
+        environment: MutableMapping[str, str],
         allow_failure: bool,
     ) -> Mapping[str, Any]:
+        env: MutableMapping[str, str] = deepcopy(environment)
         if os == OS.WINDOWS and 'TOXENV' in env:
             env['TOXENV'] = ','.join(
                 # This is needed on windows to overcome the issue of multiple installations
