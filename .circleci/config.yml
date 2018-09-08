@@ -45,7 +45,7 @@ default: &default_job
       name: Install Rust from Sources
       command: |
         set -eux
-        curl --silent --fail --show-error --location \
+        curl --silent --fail --show-error --location --retry 3 \
           https://sh.rustup.rs | sh -s -- --default-toolchain none --verbose -y
         ${HOME}/.cargo/bin/rustup install nightly
 
@@ -54,7 +54,7 @@ default: &default_job
       command: |
         SSCACHE_VERSION=0.2.7
         HOST_TRIPLETE=x86_64-unknown-linux-musl
-        curl --silent --fail --show-error --location \
+        curl --silent --fail --show-error --location --retry 3 \
           https://github.com/mozilla/sccache/releases/download/${SSCACHE_VERSION}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}.tar.gz | \
             tar -xz -C ${HOME}
         ${HOME}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}/sccache --start-server

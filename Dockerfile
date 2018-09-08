@@ -42,7 +42,8 @@ RUN set -eux && \
     # Install tox
     pip3 install tox && \
     # Install cargo
-    curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain ${RUST_TOOLCHAIN} --verbose -y && \
+    curl --silent --fail --show-error --location --retry 3 https://sh.rustup.rs | \
+        sh -s -- --default-toolchain ${RUST_TOOLCHAIN} --verbose -y && \
     ${HOME}/.cargo/bin/rustup component add rustfmt-preview --toolchain ${RUST_TOOLCHAIN} && \
     ${HOME}/.cargo/bin/rustup component add clippy-preview --toolchain ${RUST_TOOLCHAIN}
 

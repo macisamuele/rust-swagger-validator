@@ -109,14 +109,15 @@ install:
     python --version
   fi
 - pip install codecov tox-pip-extensions wheel
-#- |
-#  if [ "${TOXENV}" == "lint" ]; then
-#    # Override the default toolchain as clippy-preview component is not available on latest toolchain
-#    export RUST_TOOLCHAIN=nightly-2018-08-31
-#  fi
+- |
+  if [ "${TOXENV}" == "lint" ]; then
+    # Override the default toolchain as clippy-preview component could not available on latest toolchain
+    export RUST_TOOLCHAIN=${RUST_TOOLCHAIN}
+  fi
 - |
   # Installing rust from sources is faster than caching it, additionally it removes the issue of using a "stale" nightly version
-  curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain none --verbose -y
+  curl --silent --fail --show-error --location --retry 3 https://sh.rustup.rs | \
+    sh -s -- --default-toolchain none --verbose -y
   export PATH=${HOME}/.cargo/bin:${PATH}
   echo rustup install ${RUST_TOOLCHAIN} > /dev/stderr
   rustup install ${RUST_TOOLCHAIN}
@@ -134,9 +135,9 @@ install:
     HOST_TRIPLETE="x86_64-unknown-linux-musl"
   fi
   TMP_DIR="$(mktemp -d)"
-  curl --location \
+  curl --silent --fail --show-error --location --retry 3 \
     https://github.com/mozilla/sccache/releases/download/${SSCACHE_VERSION}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}.tar.gz | \
-    tar -xz -C ${TMP_DIR}
+      tar -xz -C ${HOME}
   export PATH=${TMP_DIR}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}:${PATH}
   sccache --start-server
   export RUSTC_WRAPPER=sccache
