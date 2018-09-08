@@ -23,7 +23,7 @@ branches:
 
 matrix:
   fast_finish: true
-  include:
+  include: []
 
 install:
 - |
