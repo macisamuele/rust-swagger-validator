@@ -1,0 +1,120 @@
+# TODO: add caching system
+# TODO: fix templating as for travis and appveyor
+version: 2
+
+default: &default_job
+  # Default job template
+  # All the jobs "extending" should be defining the executor and environmental variables
+  working_directory: ~/workdir/
+  steps:
+  - checkout
+
+  - run:
+      name: Set Environmental Variables
+      # https://circleci.com/docs/2.0/env-vars/#using-bash_env-to-set-environment-variables
+      command: |
+        echo '
+          export PYTHONUNBUFFERED=1           # disable python buffering, output come as it is generated
+          export RUST_BACKTRACE=full          # Rust build are verbose
+          export RUST_TOOLCHAIN=nightly       # Rust toolchain to install
+          export SCCACHE_DIR=${HOME}/.sccache # sscache cache directory
+          export SSCACHE_VERSION=0.2.7        # sscache version to install
+
+          export HOST_TRIPLETE=x86_64-unknown-linux-musl  # Useful to get release version of sccache from github
+
+          # Add rust commands to cache
+          export PATH=${HOME}/.cargo/bin:${PATH}
+          export PATH=${HOME}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}:${PATH}
+        ' >> ${BASH_ENV}
+
+  - run:
+      name: Fix cargo registry fetch issue
+      command: |
+        # git config --global url."ssh://git@github.com/".insteadOf "https://github.com/" || true
+        git config --global --unset url."ssh://git@github.com/".insteadOf || true
+        cat ${HOME}/.gitconfig
+
+  - run:
+      name: Install CMake
+      command: |
+        set -eux
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends cmake
+
+  - run:
+      name: Install Rust from Sources
+      command: |
+        set -eux
+        curl --silent --fail --show-error --location \
+          https://sh.rustup.rs | sh -s -- --default-toolchain none --verbose -y
+        ${HOME}/.cargo/bin/rustup install nightly
+
+  - run:
+      name: Install sccache
+      command: |
+        SSCACHE_VERSION=0.2.7
+        HOST_TRIPLETE=x86_64-unknown-linux-musl
+        curl --silent --fail --show-error --location \
+          https://github.com/mozilla/sccache/releases/download/${SSCACHE_VERSION}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}.tar.gz | \
+            tar -xz -C ${HOME}
+        ${HOME}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}/sccache --start-server
+
+  - run:
+      name: Install Python Dependencies
+      command: |
+        # `sudo` is needed because we use the system python in the docker container
+        sudo pip install codecov tox-pip-extensions wheel
+
+  - run:
+      name: Before Tests
+      command: |
+        # Print versions of the interesting tools
+        rustup --version
+        rustup show
+        rustc --version --verbose
+        cargo --version --verbose
+        python -c "import sys;print(sys.version)"
+        pip --version
+        tox --version
+
+#   - run:
+#       name: Enable sccache
+#       # https://circleci.com/docs/2.0/env-vars/#using-bash_env-to-set-environment-variables
+#       command: |
+#         echo '
+#           export RUSTC_WRAPPER=sscache
+#         ' >> ${BASH_ENV}
+
+  - run:
+      name: Run tox
+      command: |
+        tox
+
+  - run:
+      name: sccache Statistics
+      command: |
+        sccache --show-stats
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+    - python-3.5
+    - python-3.6
+
+jobs:
+  python-3.6:  # All the job could be templated
+    <<: *default_job
+    docker:
+    - image: circleci/python:3.6.6
+
+    environment:
+      TOXENV: cargo_test,py36
+
+  python-3.5:  # All the job could be templated
+    <<: *default_job
+    docker:
+    - image: circleci/python:3.5.6
+
+    environment:
+      TOXENV: cargo_test,py35
