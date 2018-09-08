@@ -34,7 +34,7 @@ default: &default_job
       command: |
         # git config --global url."ssh://git@github.com/".insteadOf "https://github.com/" || true
         git config --global --unset url."ssh://git@github.com/".insteadOf || true
-        cat ${HOME}/.gitconfig
+        git config --global --list || true
 
   - run:
       name: Install CMake
