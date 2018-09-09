@@ -31,7 +31,7 @@ default:
           export PATH=${HOME}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}:${PATH}
         ' >> ${BASH_ENV}
 
-        env | grep -vE "^(CIRCLE|HOSTNAME|GPG_KEY|BASH_ENV|SSH_AUTH_SOCK)" > ${HOME}/workdir/.env
+        env | sort | grep -vE "^(CIRCLE|HOSTNAME|GPG_KEY|BASH_ENV|SSH_AUTH_SOCK)" > ${HOME}/workdir/.env
         echo "Environment variables used in the cache key"
         cat ${HOME}/workdir/.env
 
@@ -62,11 +62,11 @@ default:
 
   - restore_cache:
       keys:
-      - v2-cache-{{ arch }}-{{ .Branch }}-{{ checksum "~/workdir/.env" }}-{{ .Environment.CIRCLE_SHA1 }}
-      - v2-cache-{{ arch }}-{{ .Branch }}-{{ checksum "~/workdir/.env" }}
-      - v2-cache-{{ arch }}-master-{{ checksum "~/workdir/.env" }}
-      - v2-cache-{{ arch }}-master
-      - v2-cache-{{ arch }}
+      - v3-cache-{{ arch }}-{{ .Branch }}-{{ checksum "~/workdir/.env" }}-{{ .Environment.CIRCLE_SHA1 }}
+      - v3-cache-{{ arch }}-{{ .Branch }}-{{ checksum "~/workdir/.env" }}
+      - v3-cache-{{ arch }}-master-{{ checksum "~/workdir/.env" }}
+      - v3-cache-{{ arch }}-master
+      - v3-cache-{{ arch }}
 
   - run:
       name: Install Rust from Sources
@@ -153,7 +153,10 @@ default:
       - ~/.cache/pre-commit
       - ~/.cargo
       - ~/.sccache
-      key: v2-cache-{{ arch }}-{{ .Branch }}-{{ checksum "~/workdir/.env" }}-{{ .Environment.CIRCLE_SHA1 }}
+      key: v3-cache-{{ arch }}-{{ .Branch }}-{{ checksum "~/workdir/.env" }}-{{ .Environment.CIRCLE_SHA1 }}
+
+  - store_artifacts:
+      path: dist/
 
 # sccache is not currently installed
 #   - run:
@@ -172,6 +175,10 @@ workflows:
     - cargo_test,py36
     - cargo_test,py37
     - py36-release
+    - py27-wheel
+    - py35-wheel
+    - py36-wheel
+    - py37-wheel
 
 jobs:
   lint:
@@ -219,3 +226,27 @@ jobs:
       TOXENV: py36-release
       CACHE_KEY: OS.LINUX-PythonVersion.PY36-py36-release
       ALLOW_FAILURE: 'true'
+  py27-wheel:
+    working_directory: ~/workdir/
+    steps: *id001
+    docker:
+    - image: circleci/python:2.7.15
+    environment: {TOXENV: py27-wheel, CACHE_KEY: OS.LINUX-PythonVersion.PY27-py27-wheel}
+  py35-wheel:
+    working_directory: ~/workdir/
+    steps: *id001
+    docker:
+    - image: circleci/python:3.5.6
+    environment: {TOXENV: py35-wheel, CACHE_KEY: OS.LINUX-PythonVersion.PY35-py35-wheel}
+  py36-wheel:
+    working_directory: ~/workdir/
+    steps: *id001
+    docker:
+    - image: circleci/python:3.6.6
+    environment: {TOXENV: py36-wheel, CACHE_KEY: OS.LINUX-PythonVersion.PY36-py36-wheel}
+  py37-wheel:
+    working_directory: ~/workdir/
+    steps: *id001
+    docker:
+    - image: circleci/python:3.7.0
+    environment: {TOXENV: py37-wheel, CACHE_KEY: OS.LINUX-PythonVersion.PY37-py37-wheel}

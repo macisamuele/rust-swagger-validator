@@ -36,7 +36,15 @@ testing_environments:
   allowed_failure: true
 
 # Wheels generation
-# TODO
-
-# Publish artifacts
-# TODO
+- os: [linux, osx, windows]
+  python: '2.7'
+  env: {TOXENV: py27-wheel}
+- os: [linux, osx, windows]
+  python: '3.5'
+  env: {TOXENV: py35-wheel}
+- os: [linux, osx, windows]
+  python: '3.6'
+  env: {TOXENV: py36-wheel}
+- os: [linux, osx, windows]
+  python: '3.7'
+  env: {TOXENV: py37-wheel}

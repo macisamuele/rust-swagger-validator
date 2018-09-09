@@ -68,6 +68,31 @@ matrix:
   - os: osx
     env: TOXENV=py36-release CACHE_KEY=OS.OSX-PythonVersion.PY36-py36-release PYTHON=3.6.6 ALLOW_FAILURE=true
     language: generic
+  - os: linux
+    env: TOXENV=py27-wheel CACHE_KEY=OS.LINUX-PythonVersion.PY27-py27-wheel
+    python: '2.7'
+  - os: osx
+    env: TOXENV=py27-wheel CACHE_KEY=OS.OSX-PythonVersion.PY27-py27-wheel PYTHON=2.7.15
+    language: generic
+  - os: linux
+    env: TOXENV=py35-wheel CACHE_KEY=OS.LINUX-PythonVersion.PY35-py35-wheel
+    python: '3.5'
+  - os: osx
+    env: TOXENV=py35-wheel CACHE_KEY=OS.OSX-PythonVersion.PY35-py35-wheel PYTHON=3.5.6
+    language: generic
+  - os: linux
+    env: TOXENV=py36-wheel CACHE_KEY=OS.LINUX-PythonVersion.PY36-py36-wheel
+    python: '3.6'
+  - os: osx
+    env: TOXENV=py36-wheel CACHE_KEY=OS.OSX-PythonVersion.PY36-py36-wheel PYTHON=3.6.6
+    language: generic
+  - os: linux
+    env: TOXENV=py37-wheel CACHE_KEY=OS.LINUX-PythonVersion.PY37-py37-wheel
+    python: '3.7'
+    sudo: required
+  - os: osx
+    env: TOXENV=py37-wheel CACHE_KEY=OS.OSX-PythonVersion.PY37-py37-wheel PYTHON=3.7.0
+    language: generic
   allow_failures:
   - env: TOXENV=py36-release CACHE_KEY=OS.LINUX-PythonVersion.PY36-py36-release ALLOW_FAILURE=true
   - env: TOXENV=py36-release CACHE_KEY=OS.OSX-PythonVersion.PY36-py36-release PYTHON=3.6.6 ALLOW_FAILURE=true
@@ -133,7 +158,7 @@ install:
   TMP_DIR="$(mktemp -d)"
   curl --silent --fail --show-error --location --retry 3 \
     https://github.com/mozilla/sccache/releases/download/${SSCACHE_VERSION}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}.tar.gz | \
-      tar -xz -C ${HOME}
+      tar -xz -C ${TMP_DIR}
   export PATH=${TMP_DIR}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}:${PATH}
   sccache --start-server
   export RUSTC_WRAPPER=sccache
