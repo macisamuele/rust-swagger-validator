@@ -174,7 +174,6 @@ workflows:
     - cargo_test,py35
     - cargo_test,py36
     - cargo_test,py37
-    - py36-release
     - py27-wheel
     - py35-wheel
     - py36-wheel
@@ -217,15 +216,6 @@ jobs:
     docker:
     - image: circleci/python:3.7.0
     environment: {TOXENV: 'cargo_test,py37', CACHE_KEY: 'OS.LINUX-PythonVersion.PY37-cargo_test,py37'}
-  py36-release:
-    working_directory: ~/workdir/
-    steps: *id001
-    docker:
-    - image: circleci/python:3.6.6
-    environment:
-      TOXENV: py36-release
-      CACHE_KEY: OS.LINUX-PythonVersion.PY36-py36-release
-      ALLOW_FAILURE: 'true'
   py27-wheel:
     working_directory: ~/workdir/
     steps: *id001
