@@ -43,11 +43,22 @@ default:
         git config --global --list || true
 
   - run:
-      name: Install CMake
+      name: Install APT Dependencies
       command: |
         set -eux
         sudo apt-get update
-        sudo apt-get install -y --no-install-recommends cmake
+        # Install depenencies for rust build and kcov
+        # Rust libs usually depends on c/c++ build tools and cmake
+        # kcov has some dependencies on low level libraries: https://github.com/SimonKagstrom/kcov/blob/master/travis/Makefile#L4
+        sudo apt-get install -y --no-install-recommends \
+          binutils-dev \
+          build-essential \
+          cmake \
+          elfutils \
+          libbfd-dev \
+          libcurl4-openssl-dev \
+          libdw-dev \
+          libelf-dev
 
   - restore_cache:
       keys:
@@ -79,13 +90,14 @@ default:
       name: Install coverage dependencies (if needed)
       command: |
         if [ "${TOXENV}" == "coverage" ]; then
-          # Install cargo-kcov dependencies (we don't need to do it in tox and keep it clean)
           TMP_DIR=$(mktemp -d)
+          CUR_DIR=$(pwd)
           cd ${TMP_DIR}
+
           command -v cargo-kcov &> /dev/null || cargo +${RUST_TOOLCHAIN} install cargo-kcov
           command -v kcov &> /dev/null || ( cargo +${RUST_TOOLCHAIN} kcov --print-install-kcov-sh | sh)
-          cd -
-          rm -rf ${TMP_DIR}
+
+          cd ${CUR_DIR}
         fi
 
 # Currently sccache is disabled as CircleCI seems to be really fast and as running with sccache enable break the build on CircleCI only
