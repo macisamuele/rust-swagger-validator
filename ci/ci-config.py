@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from collections import defaultdict
+from copy import deepcopy
 from enum import Enum
 from pathlib import Path
 from re import sub
@@ -10,6 +11,7 @@ from typing import DefaultDict
 from typing import List
 from typing import Mapping
 from typing import MutableMapping
+from typing import Union
 
 import jsonschema
 from ruamel.yaml import YAML
@@ -62,6 +64,9 @@ class PythonVersion(Enum):
         else:
             raise RuntimeError('Unsupported PythonVersion')
 
+    def circleci_docker_container(self) -> str:
+        return f'circleci/python:{self.specific_version()}'
+
 
 class CI(Enum):
     APPVEYOR = ('appveyor_template.yaml', '../.appveyor.yml')
@@ -72,17 +77,21 @@ class CI(Enum):
     def get_CIs_for_OS(cls, os: OS) -> List['CI']:
         if os == OS.WINDOWS:
             return [cls.APPVEYOR]
-        else:
-            # return [cls.CIRCLECI, cls.TRAVISCI]
+        elif os == OS.OSX:
             return [cls.TRAVISCI]
+        elif os == OS.LINUX:
+            return [cls.CIRCLECI, cls.TRAVISCI]
+        else:
+            raise RuntimeError('Unsupported CI')
 
     def get_task(
         self,
         python_version: PythonVersion,
         os: OS,
-        env: MutableMapping[str, str],
+        environment: MutableMapping[str, str],
         allow_failure: bool,
     ) -> Mapping[str, Any]:
+        env: MutableMapping[str, str] = deepcopy(environment)
         if os == OS.WINDOWS and 'TOXENV' in env:
             env['TOXENV'] = ','.join(
                 # This is needed on windows to overcome the issue of multiple installations
@@ -103,7 +112,12 @@ class CI(Enum):
                 task['ALLOW_FAILURE'] = 'true'
 
         elif self == CI.CIRCLECI:
-            raise NotImplementedError()
+            task['docker'] = [{'image': python_version.circleci_docker_container()}]
+            if allow_failure:
+                task['environment'] = dict(env, ALLOW_FAILURE='true')
+            else:
+                task['environment'] = env
+
         elif self == CI.TRAVISCI:
             task['os'] = os.value
             task['env'] = ' '.join(f'{k}={v}' for k, v in env.items())
@@ -140,7 +154,7 @@ class CI(Enum):
             raise RuntimeError('Unsupported CI')
         return task
 
-    def get_allowed_failure(self, task: Mapping[str, str]) -> Mapping[str, str]:
+    def get_allowed_failure(self, task: Mapping[str, Union[str, Mapping[str, str]]]) -> Mapping[str, Union[str, Mapping[str, str]]]:
         if self == CI.APPVEYOR:
             return {
                 # In appveyor is enough to set ALLOW_FAILURE to 'true' (according to the template) to make
@@ -149,7 +163,7 @@ class CI(Enum):
                 'env': ' '.join(f'{k}={v}' for k, v in task.items()),
             }
         elif self == CI.CIRCLECI:
-            raise NotImplementedError()
+            return deepcopy(task)
         elif self == CI.TRAVISCI:
             return {
                 'env': task['env'],
@@ -157,7 +171,11 @@ class CI(Enum):
         else:
             raise RuntimeError('Unsupported CI')
 
-    def write_configs(self, tasks: List[Mapping[str, str]], allowed_failures: List[Mapping[str, str]]) -> None:
+    def write_configs(
+        self,
+        tasks: List[Mapping[str, Union[str, Mapping[str, str]]]],
+        allowed_failures: List[Mapping[str, Union[str, Mapping[str, str]]]],
+    ) -> None:
         ci_configuration_file = Path(__file__).resolve().parent / self.value[1]
         if not tasks:
             if ci_configuration_file.exists():
@@ -167,7 +185,12 @@ class CI(Enum):
             if self == CI.APPVEYOR:
                 ci_config['environment']['matrix'] = tasks
             elif self == CI.CIRCLECI:
-                raise NotImplementedError()
+                ci_config['jobs'] = {
+                    task['environment'].get('TOXENV'): {**ci_config['default'], **task}
+                    for task in tasks
+                    if isinstance(task, dict)
+                }
+                ci_config['workflows']['build_and_test']['jobs'] = list(ci_config['jobs'])
             elif self == CI.TRAVISCI:
                 ci_config['matrix']['include'] = tasks
                 if allowed_failures:
@@ -181,8 +204,8 @@ class CI(Enum):
 def generate_configs(config_path: str) -> None:
     config = yaml.load(Path(config_path))
 
-    tasks_ci_mapping: DefaultDict[CI, List[Mapping[str, str]]] = defaultdict(list)
-    allowed_failures_ci_mapping: DefaultDict[CI, List[Mapping[str, str]]] = defaultdict(list)
+    tasks_ci_mapping: DefaultDict[CI, List[Mapping[str, Union[str, Mapping[str, str]]]]] = defaultdict(list)
+    allowed_failures_ci_mapping: DefaultDict[CI, List[Mapping[str, Union[str, Mapping[str, str]]]]] = defaultdict(list)
     for testing_environment in config['testing_environments']:
         python_version = PythonVersion(testing_environment['python'])
         for os in testing_environment['os']:
@@ -201,12 +224,9 @@ def generate_configs(config_path: str) -> None:
                     allowed_failures_ci_mapping[ci].append(
                         ci.get_allowed_failure(task),
                     )
-
     for ci in CI:
-        if ci == CI.CIRCLECI:
-            continue
-        tasks = tasks_ci_mapping.get(ci, cast(List[Mapping[str, str]], []))
-        allowed_failures = allowed_failures_ci_mapping.get(ci, cast(List[Mapping[str, str]], {}))
+        tasks = tasks_ci_mapping.get(ci, cast(List[Mapping[str, Union[str, Mapping[str, str]]]], []))
+        allowed_failures = allowed_failures_ci_mapping.get(ci, cast(List[Mapping[str, Union[str, Mapping[str, str]]]], {}))
         ci.write_configs(tasks, allowed_failures)
 
 

@@ -1,0 +1,169 @@
+# Please make sure to only modify the template file and not the generated ones.
+# Check ${GIT_REPO_ROOT}/ci/gi-config.py too verify how the template is used.
+version: 2
+
+default:
+  # Default job template
+  # All the jobs "extending" should be defining the executor and environment variables
+  working_directory: ~/workdir/
+  steps:
+  - checkout
+
+  - run:
+      name: Set Environment Variables
+      # https://circleci.com/docs/2.0/env-vars/#using-bash_env-to-set-environment-variables
+      command: |
+        echo '
+          export ALLOW_FAILURE=${ALLOW_FAILURE:-false}
+
+          export PYTHONUNBUFFERED=1           # disable python buffering, output come as it is generated
+          export RUST_BACKTRACE=full          # Rust build are verbose
+          # Override the default toolchain as clippy-preview component could not available on latest toolchain (please do it only on TOXENV=lint job)
+
+          export RUST_TOOLCHAIN=nightly       # Rust toolchain to install
+          export SCCACHE_DIR=${HOME}/.sccache # sscache cache directory
+          export SSCACHE_VERSION=0.2.7        # sscache version to install
+
+          export HOST_TRIPLETE=x86_64-unknown-linux-musl  # Useful to get release version of sccache from github
+
+          # Add rust commands to cache
+          export PATH=${HOME}/.cargo/bin:${PATH}
+          export PATH=${HOME}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}:${PATH}
+        ' >> ${BASH_ENV}
+
+        env | grep -vE "^(CIRCLE|HOSTNAME|GPG_KEY|BASH_ENV|SSH_AUTH_SOCK)" > ${HOME}/workdir/.env
+        echo "Environment variables used in the cache key"
+        cat ${HOME}/workdir/.env
+
+  - run:
+      name: Fix cargo registry fetch issue
+      command: |
+        # git config --global url."ssh://git@github.com/".insteadOf "https://github.com/" || true
+        git config --global --unset url."ssh://git@github.com".insteadOf || true
+        git config --global --list || true
+
+  - run:
+      name: Install APT Dependencies
+      command: |
+        set -eux
+        sudo apt-get update
+        # Install depenencies for rust build and kcov
+        # Rust libs usually depends on c/c++ build tools and cmake
+        # kcov has some dependencies on low level libraries: https://github.com/SimonKagstrom/kcov/blob/master/travis/Makefile#L4
+        sudo apt-get install -y --no-install-recommends \
+          binutils-dev \
+          build-essential \
+          cmake \
+          elfutils \
+          libbfd-dev \
+          libcurl4-openssl-dev \
+          libdw-dev \
+          libelf-dev
+
+  - restore_cache:
+      keys:
+      - v2-cache-{{ arch }}-{{ .Branch }}-{{ checksum "~/workdir/.env" }}-{{ .Environment.CIRCLE_SHA1 }}
+      - v2-cache-{{ arch }}-{{ .Branch }}-{{ checksum "~/workdir/.env" }}
+      - v2-cache-{{ arch }}-master-{{ checksum "~/workdir/.env" }}
+      - v2-cache-{{ arch }}-master
+      - v2-cache-{{ arch }}
+
+  - run:
+      name: Install Rust from Sources
+      command: |
+        set -eux
+        curl --silent --fail --show-error --location --retry 3 \
+          https://sh.rustup.rs | sh -s -- --default-toolchain none --verbose -y
+        ${HOME}/.cargo/bin/rustup install nightly
+
+  - run:
+      name: Install lint dependencies (if needed)
+      command: |
+        set -eux
+        if [ "${TOXENV}" == "lint" ]; then
+          # Install rustfmt and clippy in case of lint tests
+          rustup component add rustfmt-preview --toolchain ${RUST_TOOLCHAIN}
+          rustup component add clippy-preview --toolchain ${RUST_TOOLCHAIN}
+        fi
+
+  - run:
+      name: Install coverage dependencies (if needed)
+      command: |
+        if [ "${TOXENV}" == "coverage" ]; then
+          TMP_DIR=$(mktemp -d)
+          CUR_DIR=$(pwd)
+          cd ${TMP_DIR}
+
+          command -v cargo-kcov &> /dev/null || cargo +${RUST_TOOLCHAIN} install cargo-kcov
+          command -v kcov &> /dev/null || ( cargo +${RUST_TOOLCHAIN} kcov --print-install-kcov-sh | sh)
+
+          cd ${CUR_DIR}
+        fi
+
+# Currently sccache is disabled as CircleCI seems to be really fast and as running with sccache enable break the build on CircleCI only
+#   - run:
+#       name: Install sccache
+#       command: |
+#         curl --silent --fail --show-error --location --retry 3 \
+#           https://github.com/mozilla/sccache/releases/download/${SSCACHE_VERSION}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}.tar.gz | \
+#             tar -xz -C ${HOME}
+#         ${HOME}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}/sccache --start-server
+
+  - run:
+      name: Install Python Dependencies
+      command: |
+        # `sudo` is needed because we use the system python in the docker container
+        sudo pip install codecov tox-pip-extensions wheel
+
+  - run:
+      name: Before Tests
+      command: |
+        # Print versions of the interesting tools
+        rustup --version
+        rustup show
+        rustc --version --verbose
+        cargo --version --verbose
+        python -c "import sys;print(sys.version)"
+        pip --version
+        tox --version
+
+# sccache is not currently installed
+#   - run:
+#       name: Enable sccache
+#       # https://circleci.com/docs/2.0/env-vars/#using-bash_env-to-set-environment-variables
+#       command: |
+#         echo '
+#           export RUSTC_WRAPPER=sscache
+#         ' >> ${BASH_ENV}
+
+  - run:
+      name: Run tox
+      command: |
+        if [ "${ALLOW_FAILURE}" == "true" ]; then
+          tox || echo "tox failed and exited with status $?"
+        else
+          tox
+        fi
+
+  - save_cache:
+      paths:
+      - ~/workdir/target
+      - ~/.cache/pip
+      - ~/.cache/pip-faster
+      - ~/.cache/pre-commit
+      - ~/.cargo
+      - ~/.sccache
+      key: v2-cache-{{ arch }}-{{ .Branch }}-{{ checksum "~/workdir/.env" }}-{{ .Environment.CIRCLE_SHA1 }}
+
+# sccache is not currently installed
+#   - run:
+#       name: sccache Statistics
+#       command: |
+#         sccache --show-stats
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs: []
+
+jobs: []

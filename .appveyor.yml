@@ -23,26 +23,26 @@ environment:
   RUST_BACKTRACE: full      # Rust build are verbose
   RUST_TOOLCHAIN: nightly   # Rust toolchain to install
   SCCACHE_VERSION: 0.2.7    # sccache version to install
+  # # Make build very verbose
+  # SET CARGO_EXTRA_ARGS: --verbose
+  # SET PIP_EXTRA_ARGS: --verbose
   matrix:
   - PYTHON: C:\Python27-x64
-    TOXENV: py,cargo_test
-    CACHE_KEY: OS.WINDOWS-PythonVersion.PY27-py,cargo_test
+    TOXENV: cargo_test,py
+    CACHE_KEY: OS.WINDOWS-PythonVersion.PY27-cargo_test,py
   - PYTHON: C:\Python35-x64
-    TOXENV: py,cargo_test
-    CACHE_KEY: OS.WINDOWS-PythonVersion.PY35-py,cargo_test
+    TOXENV: cargo_test,py
+    CACHE_KEY: OS.WINDOWS-PythonVersion.PY35-cargo_test,py
   - PYTHON: C:\Python36-x64
-    TOXENV: py,cargo_test
-    CACHE_KEY: OS.WINDOWS-PythonVersion.PY36-py,cargo_test
+    TOXENV: cargo_test,py
+    CACHE_KEY: OS.WINDOWS-PythonVersion.PY36-cargo_test,py
   - PYTHON: C:\Python37-x64
-    TOXENV: py,cargo_test
-    CACHE_KEY: OS.WINDOWS-PythonVersion.PY37-py,cargo_test
+    TOXENV: cargo_test,py
+    CACHE_KEY: OS.WINDOWS-PythonVersion.PY37-cargo_test,py
   - PYTHON: C:\Python36-x64
     TOXENV: py-release
     CACHE_KEY: OS.WINDOWS-PythonVersion.PY36-py-release
     ALLOW_FAILURE: 'true'
-  # # Make build very verbose
-  # SET CARGO_EXTRA_ARGS: --verbose
-  # SET PIP_EXTRA_ARGS: --verbose
 
 build: off
 

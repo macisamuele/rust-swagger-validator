@@ -20,16 +20,16 @@ testing_environments:
 # Python and Rust testing
 - os: [linux, osx, windows]
   python: '2.7'
-  env: {TOXENV: 'py27,cargo_test'}
+  env: {TOXENV: 'cargo_test,py27'}
 - os: [linux, osx, windows]
   python: '3.5'
-  env: {TOXENV: 'py35,cargo_test'}
+  env: {TOXENV: 'cargo_test,py35'}
 - os: [linux, osx, windows]
   python: '3.6'
-  env: {TOXENV: 'py36,cargo_test'}
+  env: {TOXENV: 'cargo_test,py36'}
 - os: [linux, osx, windows]
   python: '3.7'
-  env: {TOXENV: 'py37,cargo_test'}
+  env: {TOXENV: 'cargo_test,py37'}
 - os: [linux, osx, windows]
   python: '3.6'
   env: {TOXENV: py36-release}

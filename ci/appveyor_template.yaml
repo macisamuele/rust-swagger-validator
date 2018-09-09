@@ -26,6 +26,7 @@ environment:
   # # Make build very verbose
   # SET CARGO_EXTRA_ARGS: --verbose
   # SET PIP_EXTRA_ARGS: --verbose
+  matrix: []
 
 build: off
 
