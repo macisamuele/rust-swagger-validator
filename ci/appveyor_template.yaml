@@ -6,10 +6,6 @@ image: Visual Studio 2017
 skip_commits:
   message: /.*\[(skip ci|ci skip)\].*/  # ignore testing commit if the message contains "skip ci" info (defined same travis rules)
 
-branches:
-  except:
-  - maci-test-circle-ci
-
 clone_depth: 1  # Define clone depth to 1 in order to fetch only the desired commit and not all the git history
 
 platform: x64

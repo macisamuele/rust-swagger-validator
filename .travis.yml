@@ -17,10 +17,6 @@ env:
   # - CARGO_EXTRA_ARGS="--verbose"
   # - PIP_EXTRA_ARGS="--verbose"
 
-branches:
-  except:
-  - maci-test-circle-ci
-
 matrix:
   fast_finish: true
   include:
