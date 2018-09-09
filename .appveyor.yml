@@ -92,12 +92,13 @@ notifications:
 on_success:
 # Remove registry index so ~/.cargo caching should be a no-op
 - cmd: rm -rf %USERPROFILE%\.cargo\registry\index\
+- cmd: bash -c 'if [ "${TOXENV}" == "py-wheel" ]; then appveyor PushArtifact dist/*.whl; fi'
 
 on_finish:
 # Print caching information
 - cmd: sccache --show-stats
 # Print build.rs so we could expose information related to rust build
-- sh: find target/*/build/rust_swagger_validator-*/out/built.rs | while read path; do echo ${path} && cat ${path} && echo && echo; done
+- cmd: bash -c "find target/*/build/rust_swagger_validator-*/out/built.rs | while read path; do echo ${path} && cat ${path} && echo && echo; done"
 
 # Enable remote desktop debugging (https://www.appveyor.com/docs/how-to/rdp-to-build-worker/)
 init:
