@@ -28,21 +28,8 @@ environment:
   # SET PIP_EXTRA_ARGS: --verbose
   matrix:
   - PYTHON: C:\Python27-x64
-    TOXENV: cargo_test,py
-    CACHE_KEY: OS.WINDOWS-PythonVersion.PY27-cargo_test,py
-  - PYTHON: C:\Python35-x64
-    TOXENV: cargo_test,py
-    CACHE_KEY: OS.WINDOWS-PythonVersion.PY35-cargo_test,py
-  - PYTHON: C:\Python36-x64
-    TOXENV: cargo_test,py
-    CACHE_KEY: OS.WINDOWS-PythonVersion.PY36-cargo_test,py
-  - PYTHON: C:\Python37-x64
-    TOXENV: cargo_test,py
-    CACHE_KEY: OS.WINDOWS-PythonVersion.PY37-cargo_test,py
-  - PYTHON: C:\Python36-x64
-    TOXENV: py-release
-    CACHE_KEY: OS.WINDOWS-PythonVersion.PY36-py-release
-    ALLOW_FAILURE: 'true'
+    TOXENV: py-wheel
+    CACHE_KEY: OS.WINDOWS-PythonVersion.PY27-py-wheel
 
 build: off
 

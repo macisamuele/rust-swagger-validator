@@ -21,56 +21,11 @@ matrix:
   fast_finish: true
   include:
   - os: linux
-    env: TOXENV=lint CACHE_KEY=OS.LINUX-PythonVersion.PY36-lint
-    python: '3.6'
-  - os: linux
-    env: TOXENV=coverage CACHE_KEY=OS.LINUX-PythonVersion.PY36-coverage
-    python: '3.6'
-    sudo: required
-    addons:
-      apt:
-        packages:
-        - libcurl4-openssl-dev
-        - libelf-dev
-        - libdw-dev
-        - cmake
-        - gcc
-        - binutils-dev
-        - libiberty-dev
-  - os: linux
-    env: TOXENV=cargo_test,py27 CACHE_KEY=OS.LINUX-PythonVersion.PY27-cargo_test,py27
+    env: TOXENV=py27-wheel CACHE_KEY=OS.LINUX-PythonVersion.PY27-py27-wheel
     python: '2.7'
   - os: osx
-    env: TOXENV=cargo_test,py27 CACHE_KEY=OS.OSX-PythonVersion.PY27-cargo_test,py27 PYTHON=2.7.15
+    env: TOXENV=py27-wheel CACHE_KEY=OS.OSX-PythonVersion.PY27-py27-wheel PYTHON=2.7.15
     language: generic
-  - os: linux
-    env: TOXENV=cargo_test,py35 CACHE_KEY=OS.LINUX-PythonVersion.PY35-cargo_test,py35
-    python: '3.5'
-  - os: osx
-    env: TOXENV=cargo_test,py35 CACHE_KEY=OS.OSX-PythonVersion.PY35-cargo_test,py35 PYTHON=3.5.6
-    language: generic
-  - os: linux
-    env: TOXENV=cargo_test,py36 CACHE_KEY=OS.LINUX-PythonVersion.PY36-cargo_test,py36
-    python: '3.6'
-  - os: osx
-    env: TOXENV=cargo_test,py36 CACHE_KEY=OS.OSX-PythonVersion.PY36-cargo_test,py36 PYTHON=3.6.6
-    language: generic
-  - os: linux
-    env: TOXENV=cargo_test,py37 CACHE_KEY=OS.LINUX-PythonVersion.PY37-cargo_test,py37
-    python: '3.7'
-    sudo: required
-  - os: osx
-    env: TOXENV=cargo_test,py37 CACHE_KEY=OS.OSX-PythonVersion.PY37-cargo_test,py37 PYTHON=3.7.0
-    language: generic
-  - os: linux
-    env: TOXENV=py36-release CACHE_KEY=OS.LINUX-PythonVersion.PY36-py36-release ALLOW_FAILURE=true
-    python: '3.6'
-  - os: osx
-    env: TOXENV=py36-release CACHE_KEY=OS.OSX-PythonVersion.PY36-py36-release PYTHON=3.6.6 ALLOW_FAILURE=true
-    language: generic
-  allow_failures:
-  - env: TOXENV=py36-release CACHE_KEY=OS.LINUX-PythonVersion.PY36-py36-release ALLOW_FAILURE=true
-  - env: TOXENV=py36-release CACHE_KEY=OS.OSX-PythonVersion.PY36-py36-release PYTHON=3.6.6 ALLOW_FAILURE=true
 
 install:
 - |
