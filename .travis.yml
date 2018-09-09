@@ -21,16 +21,16 @@ matrix:
   fast_finish: true
   include:
   - os: osx
-    env: TOXENV=cargo_test,py27,py27-wheel CACHE_KEY=OS.OSX-PythonVersion.PY27-cargo_test,py27,py27-wheel PYTHON=2.7.15
+    env: TOXENV=cargo_test,py27,py27-wheel PYTHON=2.7.15
     language: generic
   - os: osx
-    env: TOXENV=cargo_test,py35,py35-wheel CACHE_KEY=OS.OSX-PythonVersion.PY35-cargo_test,py35,py35-wheel PYTHON=3.5.6
+    env: TOXENV=cargo_test,py35,py35-wheel PYTHON=3.5.6
     language: generic
   - os: osx
-    env: TOXENV=cargo_test,py36,py36-wheel CACHE_KEY=OS.OSX-PythonVersion.PY36-cargo_test,py36,py36-wheel PYTHON=3.6.6
+    env: TOXENV=cargo_test,py36,py36-wheel PYTHON=3.6.6
     language: generic
   - os: osx
-    env: TOXENV=cargo_test,py37,py37-wheel CACHE_KEY=OS.OSX-PythonVersion.PY37-cargo_test,py37,py37-wheel PYTHON=3.7.0
+    env: TOXENV=cargo_test,py37,py37-wheel PYTHON=3.7.0
     language: generic
 
 install:

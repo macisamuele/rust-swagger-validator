@@ -102,8 +102,6 @@ class CI(Enum):
                 for toxenv in env['TOXENV'].split(',')
             )
 
-        env['CACHE_KEY'] = f'{os}-{python_version}-{env.get("TOXENV")}'
-
         task: MutableMapping[str, Any] = {}
         if self == CI.APPVEYOR:
             task['PYTHON'] = python_version.windows_path()

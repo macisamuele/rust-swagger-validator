@@ -29,16 +29,12 @@ environment:
   matrix:
   - PYTHON: C:\Python27-x64
     TOXENV: cargo_test,py,py-wheel
-    CACHE_KEY: OS.WINDOWS-PythonVersion.PY27-cargo_test,py,py-wheel
   - PYTHON: C:\Python35-x64
     TOXENV: cargo_test,py,py-wheel
-    CACHE_KEY: OS.WINDOWS-PythonVersion.PY35-cargo_test,py,py-wheel
   - PYTHON: C:\Python36-x64
     TOXENV: cargo_test,py,py-wheel
-    CACHE_KEY: OS.WINDOWS-PythonVersion.PY36-cargo_test,py,py-wheel
   - PYTHON: C:\Python37-x64
     TOXENV: cargo_test,py,py-wheel
-    CACHE_KEY: OS.WINDOWS-PythonVersion.PY37-cargo_test,py,py-wheel
 
 build: off
 
