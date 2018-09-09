@@ -155,6 +155,9 @@ default:
       - ~/.sccache
       key: v2-cache-{{ arch }}-{{ .Branch }}-{{ checksum "~/workdir/.env" }}-{{ .Environment.CIRCLE_SHA1 }}
 
+  - store_artifacts:
+      path: dist/
+
 # sccache is not currently installed
 #   - run:
 #       name: sccache Statistics
