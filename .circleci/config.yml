@@ -177,14 +177,10 @@ workflows:
     jobs:
     - lint
     - coverage
-    - cargo_test,py27
-    - cargo_test,py35
-    - cargo_test,py36
-    - cargo_test,py37
-    - py27-wheel
-    - py35-wheel
-    - py36-wheel
-    - py37-wheel
+    - cargo_test,py27,py27-wheel
+    - cargo_test,py35,py35-wheel
+    - cargo_test,py36,py36-wheel
+    - cargo_test,py37,py37-wheel
 
 jobs:
   lint:
@@ -199,51 +195,27 @@ jobs:
     docker:
     - image: circleci/python:3.6.6
     environment: {TOXENV: coverage, CACHE_KEY: OS.LINUX-PythonVersion.PY36-coverage}
-  cargo_test,py27:
+  cargo_test,py27,py27-wheel:
     working_directory: ~/workdir/
     steps: *id001
     docker:
     - image: circleci/python:2.7.15
-    environment: {TOXENV: 'cargo_test,py27', CACHE_KEY: 'OS.LINUX-PythonVersion.PY27-cargo_test,py27'}
-  cargo_test,py35:
+    environment: {TOXENV: 'cargo_test,py27,py27-wheel', CACHE_KEY: 'OS.LINUX-PythonVersion.PY27-cargo_test,py27,py27-wheel'}
+  cargo_test,py35,py35-wheel:
     working_directory: ~/workdir/
     steps: *id001
     docker:
     - image: circleci/python:3.5.6
-    environment: {TOXENV: 'cargo_test,py35', CACHE_KEY: 'OS.LINUX-PythonVersion.PY35-cargo_test,py35'}
-  cargo_test,py36:
+    environment: {TOXENV: 'cargo_test,py35,py35-wheel', CACHE_KEY: 'OS.LINUX-PythonVersion.PY35-cargo_test,py35,py35-wheel'}
+  cargo_test,py36,py36-wheel:
     working_directory: ~/workdir/
     steps: *id001
     docker:
     - image: circleci/python:3.6.6
-    environment: {TOXENV: 'cargo_test,py36', CACHE_KEY: 'OS.LINUX-PythonVersion.PY36-cargo_test,py36'}
-  cargo_test,py37:
+    environment: {TOXENV: 'cargo_test,py36,py36-wheel', CACHE_KEY: 'OS.LINUX-PythonVersion.PY36-cargo_test,py36,py36-wheel'}
+  cargo_test,py37,py37-wheel:
     working_directory: ~/workdir/
     steps: *id001
     docker:
     - image: circleci/python:3.7.0
-    environment: {TOXENV: 'cargo_test,py37', CACHE_KEY: 'OS.LINUX-PythonVersion.PY37-cargo_test,py37'}
-  py27-wheel:
-    working_directory: ~/workdir/
-    steps: *id001
-    docker:
-    - image: circleci/python:2.7.15
-    environment: {TOXENV: py27-wheel, CACHE_KEY: OS.LINUX-PythonVersion.PY27-py27-wheel}
-  py35-wheel:
-    working_directory: ~/workdir/
-    steps: *id001
-    docker:
-    - image: circleci/python:3.5.6
-    environment: {TOXENV: py35-wheel, CACHE_KEY: OS.LINUX-PythonVersion.PY35-py35-wheel}
-  py36-wheel:
-    working_directory: ~/workdir/
-    steps: *id001
-    docker:
-    - image: circleci/python:3.6.6
-    environment: {TOXENV: py36-wheel, CACHE_KEY: OS.LINUX-PythonVersion.PY36-py36-wheel}
-  py37-wheel:
-    working_directory: ~/workdir/
-    steps: *id001
-    docker:
-    - image: circleci/python:3.7.0
-    environment: {TOXENV: py37-wheel, CACHE_KEY: OS.LINUX-PythonVersion.PY37-py37-wheel}
+    environment: {TOXENV: 'cargo_test,py37,py37-wheel', CACHE_KEY: 'OS.LINUX-PythonVersion.PY37-cargo_test,py37,py37-wheel'}

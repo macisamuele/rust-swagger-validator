@@ -89,7 +89,7 @@ notifications:
 on_success:
 # Remove registry index so ~/.cargo caching should be a no-op
 - cmd: rm -rf %USERPROFILE%\.cargo\registry\index\
-- cmd: bash -c 'if [ "${TOXENV}" == "py-wheel" ]; then appveyor PushArtifact dist/*.whl; fi'
+- cmd: bash -c 'echo "${TOXENV} | grep -qE "(^|,)py[0-9]{2}-wheel(,|$)" && appveyor PushArtifact dist/*.whl'
 
 on_finish:
 # Print caching information
