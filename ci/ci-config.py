@@ -80,7 +80,7 @@ class CI(Enum):
         elif os == OS.OSX:
             return [cls.TRAVISCI]
         elif os == OS.LINUX:
-            return [cls.CIRCLECI, cls.TRAVISCI]
+            return [cls.CIRCLECI]
         else:
             raise RuntimeError('Unsupported CI')
 

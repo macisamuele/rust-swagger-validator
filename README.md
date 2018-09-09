@@ -4,8 +4,8 @@
 ***This repository is meant as personal exercise for learning [Rust](https://www.rust-lang.org/) and python bindings via
 [PyO3](https://github.com/PyO3/pyo3).***
 
-[![Linux Build on CircleCI](https://circleci.com/gh/macisamuele/rust-swagger-validator/tree/master.svg?style=svg)](https://circleci.com/gh/macisamuele/rust-swagger-validator/tree/master)
-[![Linux & Mac Build on TravisCI](https://img.shields.io/travis/com/macisamuele/rust-swagger-validator/master.svg?logo=travis&label=Linux+%26+Mac)](https://travis-ci.com/macisamuele/rust-swagger-validator)
+[![Linux Build on CircleCI](https://circleci.com/gh/macisamuele/rust-swagger-validator/tree/master.svg?style=shield)](https://circleci.com/gh/macisamuele/rust-swagger-validator/tree/master)
+[![Mac Build on TravisCI](https://img.shields.io/travis/com/macisamuele/rust-swagger-validator/master.svg?logo=travis&label=Linux+%26+Mac)](https://travis-ci.com/macisamuele/rust-swagger-validator)
 [![Windows Build on AppVeyor](https://img.shields.io/appveyor/ci/macisamuele/rust-swagger-validator/master.svg?logo=appveyor&label=Windows)](https://ci.appveyor.com/project/macisamuele/rust-swagger-validator)
 [![Coverage](https://img.shields.io/codecov/c/github/macisamuele/rust-swagger-validator/master.svg)](https://codecov.io/gh/macisamuele/rust-swagger-validator)
 
