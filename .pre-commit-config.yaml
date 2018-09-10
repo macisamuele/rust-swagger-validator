@@ -24,6 +24,7 @@ repos:
   - id: check-added-large-files
   - id: check-byte-order-marker
   - id: requirements-txt-fixer
+  - id: fix-encoding-pragma
 - repo: https://github.com/asottile/reorder_python_imports
   rev: v1.1.0
   hooks:
