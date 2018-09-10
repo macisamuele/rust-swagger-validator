@@ -175,47 +175,12 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-    - lint
-    - coverage
-    - cargo_test,py27,py27-wheel
-    - cargo_test,py35,py35-wheel
-    - cargo_test,py36,py36-wheel
-    - cargo_test,py37,py37-wheel
+    - cargo_test
 
 jobs:
-  lint:
-    working_directory: ~/workdir/
-    steps: *id001
-    docker:
-    - image: circleci/python:3.6.6
-    environment: {TOXENV: lint}
-  coverage:
-    working_directory: ~/workdir/
-    steps: *id001
-    docker:
-    - image: circleci/python:3.6.6
-    environment: {TOXENV: coverage}
-  cargo_test,py27,py27-wheel:
-    working_directory: ~/workdir/
-    steps: *id001
-    docker:
-    - image: circleci/python:2.7.15
-    environment: {TOXENV: 'cargo_test,py27,py27-wheel'}
-  cargo_test,py35,py35-wheel:
-    working_directory: ~/workdir/
-    steps: *id001
-    docker:
-    - image: circleci/python:3.5.6
-    environment: {TOXENV: 'cargo_test,py35,py35-wheel'}
-  cargo_test,py36,py36-wheel:
-    working_directory: ~/workdir/
-    steps: *id001
-    docker:
-    - image: circleci/python:3.6.6
-    environment: {TOXENV: 'cargo_test,py36,py36-wheel'}
-  cargo_test,py37,py37-wheel:
+  cargo_test:
     working_directory: ~/workdir/
     steps: *id001
     docker:
     - image: circleci/python:3.7.0
-    environment: {TOXENV: 'cargo_test,py37,py37-wheel'}
+    environment: {TOXENV: cargo_test}
