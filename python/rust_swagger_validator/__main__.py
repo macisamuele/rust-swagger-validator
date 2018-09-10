@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
+
 if __name__ == '__main__':
     from os.path import abspath
     from os.path import join
@@ -17,11 +24,11 @@ if __name__ == '__main__':
     try:
         print(SwaggerSpec.from_url('test-data/json-valid-specs/swagger.json').uri)
     except Exception as e:
-        print(f'Exception: {e}')
+        print('Exception: {}'.format(e))
     try:
         print(SwaggerSpec.from_url('does-not-really-matter', True).uri)
     except Exception as e:
-        print(f'Exception: {e}')
+        print('Exception: {}'.format(e))
     swagger_spec = SwaggerSpec.from_url(spec_url, False)
     print(type(swagger_spec))
     print(isinstance(swagger_spec, SwaggerSpec))

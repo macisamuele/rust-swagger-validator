@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 from argparse import ArgumentParser
 from collections import defaultdict
 from copy import deepcopy
@@ -5,19 +11,22 @@ from enum import Enum
 from pathlib import Path
 from re import sub
 from sys import maxsize
-from typing import Any
+from typing import Any  # noqa: F401
 from typing import cast
-from typing import DefaultDict
+from typing import DefaultDict  # noqa: F401
 from typing import List
 from typing import Mapping
-from typing import MutableMapping
+from typing import MutableMapping  # noqa: F401
+from typing import Optional  # noqa: F401
+from typing import Text
 from typing import Union
 
 import jsonschema
 from ruamel.yaml import YAML
 
 
-def _init_yaml() -> YAML:
+def _init_yaml():
+    # type: () -> YAML
     yaml = YAML()
     yaml.indent = 2
     # Prevent ruamel.yaml to wrap yaml lines
@@ -40,32 +49,31 @@ class PythonVersion(Enum):
     PY36 = '3.6'
     PY37 = '3.7'
 
-    def specific_version(self) -> str:
+    def specific_version(self):
+        # type: () -> Text
         if self == PythonVersion.PY27:
             return '2.7.15'
         elif self == PythonVersion.PY35:
             return '3.5.6'
         elif self == PythonVersion.PY36:
             return '3.6.6'
-        elif self == PythonVersion.PY37:
-            return '3.7.0'
         else:
-            raise RuntimeError('Unsupported PythonVersion')
+            return '3.7.0'
 
-    def windows_path(self) -> str:
+    def windows_path(self):
+        # type: () -> Text
         if self == PythonVersion.PY27:
             return 'C:\Python27-x64'
         elif self == PythonVersion.PY35:
             return 'C:\Python35-x64'
         elif self == PythonVersion.PY36:
             return 'C:\Python36-x64'
-        elif self == PythonVersion.PY37:
-            return 'C:\Python37-x64'
         else:
-            raise RuntimeError('Unsupported PythonVersion')
+            return 'C:\Python37-x64'
 
-    def circleci_docker_container(self) -> str:
-        return f'circleci/python:{self.specific_version()}'
+    def circleci_docker_container(self):
+        # type: () -> Text
+        return 'circleci/python:{}'.format(self.specific_version())
 
 
 class CI(Enum):
@@ -74,7 +82,8 @@ class CI(Enum):
     TRAVISCI = ('travis_template.yaml', '../.travis.yml')
 
     @classmethod
-    def get_CIs_for_OS(cls, os: OS) -> List['CI']:
+    def get_CIs_for_OS(cls, os):
+        # type: (OS) -> List['CI']
         if os == OS.WINDOWS:
             return [cls.APPVEYOR]
         elif os == OS.OSX:
@@ -86,12 +95,13 @@ class CI(Enum):
 
     def get_task(
         self,
-        python_version: PythonVersion,
-        os: OS,
-        environment: MutableMapping[str, str],
-        allow_failure: bool,
-    ) -> Mapping[str, Any]:
-        env: MutableMapping[str, str] = deepcopy(environment)
+        python_version,  # type: PythonVersion
+        os,  # type: OS
+        environment,  # type: MutableMapping[Text, Text]
+        allow_failure,  # type: bool
+    ):
+        # type: (...) -> Mapping[Text, Any]
+        env = deepcopy(environment)  # type: MutableMapping[Text, Text]
         if os == OS.WINDOWS and 'TOXENV' in env:
             env['TOXENV'] = ','.join(
                 # This is needed on windows to overcome the issue of multiple installations
@@ -102,7 +112,7 @@ class CI(Enum):
                 for toxenv in env['TOXENV'].split(',')
             )
 
-        task: MutableMapping[str, Any] = {}
+        task = {}  # type: MutableMapping[Text, Any]
         if self == CI.APPVEYOR:
             task['PYTHON'] = python_version.windows_path()
             task.update(env)
@@ -118,7 +128,7 @@ class CI(Enum):
 
         elif self == CI.TRAVISCI:
             task['os'] = os.value
-            task['env'] = ' '.join(f'{k}={v}' for k, v in env.items())
+            task['env'] = ' '.join('{}={}'.format(k, v) for k, v in env.items())
 
             if os == OS.LINUX:
                 task['python'] = python_version.value
@@ -126,7 +136,7 @@ class CI(Enum):
                     task['sudo'] = 'required'
             elif os == OS.OSX:
                 task['language'] = 'generic'
-                task['env'] = ' '.join([task['env'], f'PYTHON={python_version.specific_version()}']).strip()
+                task['env'] = ' '.join([task['env'], 'PYTHON={}'.format(python_version.specific_version())]).strip()
 
             if allow_failure:
                 task['env'] = ' '.join([task['env'], 'ALLOW_FAILURE=true']).strip()
@@ -152,13 +162,17 @@ class CI(Enum):
             raise RuntimeError('Unsupported CI')
         return task
 
-    def get_allowed_failure(self, task: Mapping[str, Union[str, Mapping[str, str]]]) -> Mapping[str, Union[str, Mapping[str, str]]]:
+    def get_allowed_failure(
+        self,
+        task,  # type: Mapping[Text, Union[Text, Mapping[Text, Text]]]
+    ):
+        # type: (...) -> Mapping[Text, Union[Text, Mapping[Text, Text]]]
         if self == CI.APPVEYOR:
             return {
                 # In appveyor is enough to set ALLOW_FAILURE to 'true' (according to the template) to make
                 # task failure allowed. So what matters is returning something, the content is not important
-                # as it won't be printed on the final file. I'm stringing the env for debugging purposes only
-                'env': ' '.join(f'{k}={v}' for k, v in task.items()),
+                # as it won't be printed on the final file. I'm Textinging the env for debugging purposes only
+                'env': ' '.join('{}={}'.format(k, v) for k, v in task.items()),
             }
         elif self == CI.CIRCLECI:
             return deepcopy(task)
@@ -171,9 +185,10 @@ class CI(Enum):
 
     def write_configs(
         self,
-        tasks: List[Mapping[str, Union[str, Mapping[str, str]]]],
-        allowed_failures: List[Mapping[str, Union[str, Mapping[str, str]]]],
-    ) -> None:
+        tasks,  # type: List[Mapping[Text, Union[Text, Mapping[Text, Text]]]]
+        allowed_failures,  # type: List[Mapping[Text, Union[Text, Mapping[Text, Text]]]]
+    ):
+        # type: (...)  -> None
         ci_configuration_file = Path(__file__).resolve().parent / self.value[1]
         if not tasks:
             if ci_configuration_file.exists():
@@ -184,7 +199,7 @@ class CI(Enum):
                 ci_config['environment']['matrix'] = tasks
             elif self == CI.CIRCLECI:
                 ci_config['jobs'] = {
-                    task['environment'].get('TOXENV'): {**ci_config['default'], **task}
+                    task['environment'].get('TOXENV'): dict(ci_config['default'], **task)
                     for task in tasks
                     if isinstance(task, dict)
                 }
@@ -199,11 +214,12 @@ class CI(Enum):
             yaml.dump(ci_config, ci_configuration_file)
 
 
-def generate_configs(config_path: str) -> None:
+def generate_configs(config_path):
+    # type: (Text) -> None
     config = yaml.load(Path(config_path))
 
-    tasks_ci_mapping: DefaultDict[CI, List[Mapping[str, Union[str, Mapping[str, str]]]]] = defaultdict(list)
-    allowed_failures_ci_mapping: DefaultDict[CI, List[Mapping[str, Union[str, Mapping[str, str]]]]] = defaultdict(list)
+    tasks_ci_mapping = defaultdict(list)  # type: DefaultDict[CI, List[Mapping[Text, Union[Text, Mapping[Text, Text]]]]]
+    allowed_failures_ci_mapping = defaultdict(list)  # type: DefaultDict[CI, List[Mapping[Text, Union[Text, Mapping[Text, Text]]]]]
     for testing_environment in config['testing_environments']:
         python_version = PythonVersion(testing_environment['python'])
         for os in testing_environment['os']:
@@ -223,12 +239,13 @@ def generate_configs(config_path: str) -> None:
                         ci.get_allowed_failure(task),
                     )
     for ci in CI:
-        tasks = tasks_ci_mapping.get(ci, cast(List[Mapping[str, Union[str, Mapping[str, str]]]], []))
-        allowed_failures = allowed_failures_ci_mapping.get(ci, cast(List[Mapping[str, Union[str, Mapping[str, str]]]], {}))
+        tasks = tasks_ci_mapping.get(ci, cast(List[Mapping[Text, Union[Text, Mapping[Text, Text]]]], []))
+        allowed_failures = allowed_failures_ci_mapping.get(ci, cast(List[Mapping[Text, Union[Text, Mapping[Text, Text]]]], {}))
         ci.write_configs(tasks, allowed_failures)
 
 
-def validate_config(config_path: str) -> None:
+def validate_config(config_path):
+    # type: (Text) -> None
     # This is needed as jsonschema expects `dict` objects while the default type (rt) returns ordered dicts
     yml = YAML(typ='safe')
 
@@ -241,7 +258,8 @@ def validate_config(config_path: str) -> None:
     )
 
 
-def main(argv: str=None) -> int:
+def main(argv=None):
+    # type: (Optional[List[Text]]) -> int
     parser = ArgumentParser('Support for CI-Configs')
     parser.add_argument(
         '--validate',

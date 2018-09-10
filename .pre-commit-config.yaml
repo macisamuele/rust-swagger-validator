@@ -66,6 +66,7 @@ repos:
     language: python
     language_version: python3.6
     additional_dependencies: [mypy==0.620]  # don't forget to bump the version in requirements-dev.txt too!
+    exclude: ^setup.py$
     files: ^.+\.py$
   - id: ci-configurations
     name: ci-configurations
