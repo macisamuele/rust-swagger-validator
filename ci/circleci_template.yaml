@@ -101,13 +101,13 @@ default:
         fi
 
 # Currently sccache is disabled as CircleCI seems to be really fast and as running with sccache enable break the build on CircleCI only
-#   - run:
-#       name: Install sccache
-#       command: |
-#         curl --silent --fail --show-error --location --retry 3 \
-#           https://github.com/mozilla/sccache/releases/download/${SSCACHE_VERSION}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}.tar.gz | \
-#             tar -xz -C ${HOME}
-#         ${HOME}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}/sccache --start-server
+  - run:
+      name: Install sccache
+      command: |
+        curl --silent --fail --show-error --location --retry 3 \
+          https://github.com/mozilla/sccache/releases/download/${SSCACHE_VERSION}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}.tar.gz | \
+            tar -xz -C ${HOME}
+        ${HOME}/sccache-${SSCACHE_VERSION}-${HOST_TRIPLETE}/sccache --start-server
 
   - run:
       name: Install Python Dependencies
@@ -128,13 +128,13 @@ default:
         tox --version
 
 # sccache is not currently installed
-#   - run:
-#       name: Enable sccache
-#       # https://circleci.com/docs/2.0/env-vars/#using-bash_env-to-set-environment-variables
-#       command: |
-#         echo '
-#           export RUSTC_WRAPPER=sscache
-#         ' >> ${BASH_ENV}
+  - run:
+      name: Enable sccache
+      # https://circleci.com/docs/2.0/env-vars/#using-bash_env-to-set-environment-variables
+      command: |
+        echo '
+          export RUSTC_WRAPPER=sscache
+        ' >> ${BASH_ENV}
 
   - run:
       name: Run tox
@@ -166,10 +166,10 @@ default:
       path: dist/
 
 # sccache is not currently installed
-#   - run:
-#       name: sccache Statistics
-#       command: |
-#         sccache --show-stats
+  - run:
+      name: sccache Statistics
+      command: |
+        sccache --show-stats
 
 workflows:
   version: 2
