@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+"""
+Top level rust-swagger-validator module
+The module itself contains few versioning information
+"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function

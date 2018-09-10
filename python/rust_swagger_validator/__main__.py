@@ -1,11 +1,20 @@
 # -*- coding: utf-8 -*-
+"""
+Simple python file to show capabilities of the rust-binded library
+
+NOTE: this is at the moment used for simple manual testing
+"""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
 
-if __name__ == '__main__':
+def main():
+    # type: () -> int
+    """
+    Run a set of actions with the library
+    """
     from os.path import abspath
     from os.path import join
 
@@ -23,13 +32,19 @@ if __name__ == '__main__':
     print(SwaggerSpec.from_url(spec_url, False).uri)
     try:
         print(SwaggerSpec.from_url('test-data/json-valid-specs/swagger.json').uri)
-    except Exception as e:
-        print('Exception: {}'.format(e))
+    except Exception as exception:  # pylint: disable=W0703
+        print('Exception: {}'.format(exception))
     try:
         print(SwaggerSpec.from_url('does-not-really-matter', True).uri)
-    except Exception as e:
-        print('Exception: {}'.format(e))
+    except Exception as exception:  # pylint: disable=W0703
+        print('Exception: {}'.format(exception))
     swagger_spec = SwaggerSpec.from_url(spec_url, False)
     print(type(swagger_spec))
     print(isinstance(swagger_spec, SwaggerSpec))
     print(type(swagger_spec).__bases__)
+
+    return 0
+
+
+if __name__ == '__main__':
+    exit(main())
