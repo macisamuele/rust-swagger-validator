@@ -20,7 +20,8 @@ def main():
 
     from six.moves.urllib.parse import urljoin
     from rust_swagger_validator import _rust_module
-    from rust_swagger_validator._rust_module import RustSwaggerSpec as SwaggerSpec
+    from rust_swagger_validator._rust_module import RustSwaggerSpec
+    from rust_swagger_validator.swagger_spec import SwaggerSpec
 
     print(_rust_module.__build__)
     print(_rust_module.convert_string(1))
@@ -28,18 +29,19 @@ def main():
     print(_rust_module.__dict__)
 
     spec_url = urljoin('file:', abspath(join('test-data', 'json-valid-specs', 'swagger.json')))
-    print(SwaggerSpec.from_url(spec_url).uri)
-    print(SwaggerSpec.from_url(spec_url, False).uri)
+    print(RustSwaggerSpec.from_url(spec_url).uri)
+    print(RustSwaggerSpec.from_url(spec_url, False).uri)
     try:
-        print(SwaggerSpec.from_url('test-data/json-valid-specs/swagger.json').uri)
+        print(RustSwaggerSpec.from_url('test-data/json-valid-specs/swagger.json').uri)
     except Exception as exception:  # pylint: disable=W0703
         print('Exception: {}'.format(exception))
     try:
-        print(SwaggerSpec.from_url('does-not-really-matter', True).uri)
+        print(RustSwaggerSpec.from_url('does-not-really-matter', True).uri)
     except Exception as exception:  # pylint: disable=W0703
         print('Exception: {}'.format(exception))
-    swagger_spec = SwaggerSpec.from_url(spec_url, False)
+    swagger_spec = RustSwaggerSpec.from_url(spec_url, False)
     print(type(swagger_spec))
+    print(isinstance(swagger_spec, RustSwaggerSpec))
     print(isinstance(swagger_spec, SwaggerSpec))
     print(type(swagger_spec).__bases__)
 
