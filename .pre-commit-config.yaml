@@ -34,8 +34,6 @@ repos:
   hooks:
   - id: pyupgrade
     language_version: python3.6
-    args:
-    - --py36-plus
     exclude: ^(ci/.*)$
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
   rev: v1.1.3
