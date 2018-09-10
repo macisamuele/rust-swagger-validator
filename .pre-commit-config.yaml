@@ -29,6 +29,17 @@ repos:
   hooks:
   - id: reorder-python-imports
     language_version: python3.6
+    exclude: ^setup.py$
+    args:
+    - --py26-plus
+    - --add-import
+    - from __future__ import absolute_import
+    - --add-import
+    - from __future__ import division
+    - --add-import
+    - from __future__ import print_function
+    - --add-import
+    - from __future__ import unicode_literals
 - repo: https://github.com/asottile/pyupgrade
   rev: v1.4.0
   hooks:
