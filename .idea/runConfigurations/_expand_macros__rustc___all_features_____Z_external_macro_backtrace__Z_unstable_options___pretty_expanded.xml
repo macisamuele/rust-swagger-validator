@@ -7,6 +7,7 @@
     <option name="workingDirectory" value="file://$PROJECT_DIR$" />
     <envs>
       <env name="RUST_BACKTRACE" value="full" />
+      <env name="RUSTC_WRAPPER" value="sccache" />
     </envs>
     <method v="2" />
   </configuration>
