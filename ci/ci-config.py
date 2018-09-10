@@ -80,7 +80,7 @@ class CI(Enum):
         elif os == OS.OSX:
             return [cls.TRAVISCI]
         elif os == OS.LINUX:
-            return [cls.CIRCLECI, cls.TRAVISCI]
+            return [cls.CIRCLECI]
         else:
             raise RuntimeError('Unsupported CI')
 
@@ -101,8 +101,6 @@ class CI(Enum):
                 sub('py\d\d', 'py', toxenv)
                 for toxenv in env['TOXENV'].split(',')
             )
-
-        env['CACHE_KEY'] = f'{os}-{python_version}-{env.get("TOXENV")}'
 
         task: MutableMapping[str, Any] = {}
         if self == CI.APPVEYOR:

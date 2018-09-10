@@ -145,6 +145,13 @@ default:
           tox
         fi
 
+  - run:
+      name: Upload coverage data (if needed)
+      command: |
+        if [ "${TOXENV}" == "coverage" ]; then
+          codecov --verbose
+        fi
+
   - save_cache:
       paths:
       - ~/workdir/target

@@ -17,34 +17,16 @@ testing_environments:
 - os: [linux]
   python: '3.6'
   env: {TOXENV: coverage}
-# Python and Rust testing
+# Python and Rust testing and Wheels generation
 - os: [linux, osx, windows]
   python: '2.7'
-  env: {TOXENV: 'cargo_test,py27'}
+  env: {TOXENV: 'cargo_test,py27,py27-wheel'}
 - os: [linux, osx, windows]
   python: '3.5'
-  env: {TOXENV: 'cargo_test,py35'}
+  env: {TOXENV: 'cargo_test,py35,py35-wheel'}
 - os: [linux, osx, windows]
   python: '3.6'
-  env: {TOXENV: 'cargo_test,py36'}
+  env: {TOXENV: 'cargo_test,py36,py36-wheel'}
 - os: [linux, osx, windows]
   python: '3.7'
-  env: {TOXENV: 'cargo_test,py37'}
-- os: [linux, osx, windows]
-  python: '3.6'
-  env: {TOXENV: py36-release}
-  allowed_failure: true
-
-# Wheels generation
-- os: [linux, osx, windows]
-  python: '2.7'
-  env: {TOXENV: py27-wheel}
-- os: [linux, osx, windows]
-  python: '3.5'
-  env: {TOXENV: py35-wheel}
-- os: [linux, osx, windows]
-  python: '3.6'
-  env: {TOXENV: py36-wheel}
-- os: [linux, osx, windows]
-  python: '3.7'
-  env: {TOXENV: py37-wheel}
+  env: {TOXENV: 'cargo_test,py37,py37-wheel'}
