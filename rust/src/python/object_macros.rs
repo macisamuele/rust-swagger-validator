@@ -1,14 +1,4 @@
-#![deny(
-    anonymous_parameters,
-    bad_style,
-    missing_copy_implementations,
-    missing_debug_implementations,
-    unused_extern_crates,
-    unused_import_braces,
-    unused_results,
-    unused_qualifications,
-)]
-
+#[macro_export]
 macro_rules! initialize_python_object {
     // The objective of this macro is to provide a "simpler" way to initialize an python object
     // outside of a constructor. As to do it there are a couple of actions to be taken and has to be

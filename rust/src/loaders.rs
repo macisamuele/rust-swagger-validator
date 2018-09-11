@@ -1,15 +1,3 @@
-#![deny(
-    anonymous_parameters,
-    bad_style,
-    missing_copy_implementations,
-    missing_debug_implementations,
-// missing_docs, // TODO: add missing_docs to list of deny
-    unused_extern_crates,
-    unused_import_braces,
-    unused_results,
-    unused_qualifications,
-)]
-
 extern crate reqwest;
 extern crate serde_json;
 extern crate serde_yaml;

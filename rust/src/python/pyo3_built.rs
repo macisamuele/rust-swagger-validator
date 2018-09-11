@@ -1,14 +1,3 @@
-#![deny(
-    anonymous_parameters,
-    bad_style,
-    missing_copy_implementations,
-    missing_debug_implementations,
-    unused_extern_crates,
-    unused_import_braces,
-    unused_results,
-    unused_qualifications,
-)]
-
 // This file is an adaptation of https://github.com/PyO3/pyo3-built
 // pyo3-built seems not released on the public crates :(
 

@@ -1,15 +1,4 @@
-#![deny(
-    anonymous_parameters,
-    bad_style,
-    missing_copy_implementations,
-    missing_debug_implementations,
-// missing_docs, // TODO: add missing_docs to list of deny
-    unused_extern_crates,
-    unused_import_braces,
-    unused_results,
-    unused_qualifications,
-)]
-
+#[macro_export]
 macro_rules! from_error_to_enum_variant {
     // Define association between errors and equivalent enum errors representations
     // This will allow to reduce the amount of `match`es and use a simpler `?`
