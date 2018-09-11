@@ -27,7 +27,7 @@ def main():
     print(_rust_module.__build__)
     print(_rust_module.convert_string(1))
     print(_rust_module.no_parameters())
-    print(_rust_module.__dict__)
+    # print(_rust_module.__dict__)  # Sub-classing make this not work anymore ;(
 
     spec_url = urljoin('file:', abspath(join('test-data', 'json-valid-specs', 'swagger.json')))
     print(RustSwaggerSpec.from_url(spec_url).uri)
@@ -41,7 +41,7 @@ def main():
     except Exception as exception:  # pylint: disable=W0703
         print('Exception: {}'.format(exception))
     swagger_spec = RustSwaggerSpec.from_url(spec_url, False)
-    print(type(swagger_spec))
+    # print(type(swagger_spec))  # Sub-classing make this not work anymore ;(
     print(isinstance(swagger_spec, RustBase))
     print(isinstance(swagger_spec, RustSwaggerSpec))
     print(isinstance(swagger_spec, SwaggerSpec))
