@@ -26,6 +26,25 @@ pub fn no_parameters() -> usize {
 }
 
 #[pyclass(subclass)]
+struct RustBase {
+    token: PyToken,
+    #[prop(get)]
+    val1: u32,
+}
+
+#[pymethods]
+impl RustBase {
+    #[new]
+    fn __new__(obj: &PyRawObject) -> PyResult<()> {
+        obj.init(|token| Self { val1: 10, token })
+    }
+
+    pub fn method(&self) -> PyResult<()> {
+        Ok(())
+    }
+}
+
+#[pyclass(subclass, extends=RustBase)]
 struct RustSwaggerSpec {
     token: PyToken,
     swagger_schema: RustSwaggerSchema,
@@ -81,6 +100,7 @@ impl From<RustSwaggerSchemaError> for PyErr {
 #[pymodinit]
 fn _rust_module(py: Python, m: &PyModule) -> PyResult<()> {
     m.add("__build__", pyo3_built!(py))?;
+    m.add_class::<RustBase>()?;
     m.add_class::<RustSwaggerSpec>()?;
 
     m.add_function(wrap_function!(convert_string))?;

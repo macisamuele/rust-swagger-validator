@@ -21,6 +21,7 @@ def main():
     from six.moves.urllib.parse import urljoin
     from rust_swagger_validator import _rust_module
     from rust_swagger_validator._rust_module import RustSwaggerSpec
+    from rust_swagger_validator._rust_module import RustBase
     from rust_swagger_validator.swagger_spec import SwaggerSpec
 
     print(_rust_module.__build__)
@@ -41,6 +42,7 @@ def main():
         print('Exception: {}'.format(exception))
     swagger_spec = RustSwaggerSpec.from_url(spec_url, False)
     print(type(swagger_spec))
+    print(isinstance(swagger_spec, RustBase))
     print(isinstance(swagger_spec, RustSwaggerSpec))
     print(isinstance(swagger_spec, SwaggerSpec))
     print(type(swagger_spec).__bases__)
