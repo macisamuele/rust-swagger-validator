@@ -116,7 +116,8 @@ pub fn load_from_string(
     match format {
         None => Format::YAML, // TODO: make it smarter?
         Some(format) => format,
-    }.get_loader()
+    }
+    .get_loader()
     .load_from_string(content)
 }
 
@@ -127,7 +128,8 @@ pub fn load_from_path(
     match format {
         None => Format::YAML, // TODO: make it smarter?
         Some(format) => format,
-    }.get_loader()
+    }
+    .get_loader()
     .load_from_path(path)
 }
 
@@ -135,7 +137,8 @@ pub fn load_from_url(url: &str, format: Option<Format>) -> Result<serde_json::Va
     match format {
         None => Format::YAML, // TODO: make it smarter?
         Some(format) => format,
-    }.get_loader()
+    }
+    .get_loader()
     .load_from_url(url)
 }
 
@@ -147,6 +150,7 @@ pub fn load_from_url_with_timeout(
     match format {
         None => Format::YAML, // TODO: make it smarter?
         Some(format) => format,
-    }.get_loader()
+    }
+    .get_loader()
     .load_from_url_with_timeout(url, timeout_ms)
 }
