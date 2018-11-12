@@ -132,8 +132,8 @@ class CI(Enum):
 
             if os == OS.LINUX:
                 task['python'] = python_version.value
-                if python_version == PythonVersion.PY37:
-                    task['sudo'] = 'required'
+#                if python_version == PythonVersion.PY37:
+#                    task['sudo'] = 'required'
             elif os == OS.OSX:
                 task['language'] = 'generic'
                 task['env'] = ' '.join([task['env'], 'PYTHON={}'.format(python_version.specific_version())]).strip()
