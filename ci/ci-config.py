@@ -63,13 +63,13 @@ class PythonVersion(Enum):
     def windows_path(self):
         # type: () -> Text
         if self == PythonVersion.PY27:
-            return 'C:\Python27-x64'
+            return 'C:\\Python27-x64'
         elif self == PythonVersion.PY35:
-            return 'C:\Python35-x64'
+            return 'C:\\Python35-x64'
         elif self == PythonVersion.PY36:
-            return 'C:\Python36-x64'
+            return 'C:\\Python36-x64'
         else:
-            return 'C:\Python37-x64'
+            return 'C:\\Python37-x64'
 
     def circleci_docker_container(self):
         # type: () -> Text
@@ -85,11 +85,11 @@ class CI(Enum):
     def get_CIs_for_OS(cls, os):
         # type: (OS) -> List['CI']
         if os == OS.WINDOWS:
-            return [cls.APPVEYOR]
+            return [cls.TRAVISCI, cls.APPVEYOR]
         elif os == OS.OSX:
             return [cls.TRAVISCI]
         elif os == OS.LINUX:
-            return [cls.CIRCLECI]
+            return [cls.TRAVISCI, cls.CIRCLECI]
         else:
             raise RuntimeError('Unsupported CI')
 
@@ -108,7 +108,7 @@ class CI(Enum):
                 # of the same interpreter (32 and 64 bits). By using py (with no version specifier)
                 # tox will use the same python interpreter that executes tox
                 # https://packaging.python.org/guides/supporting-windows-using-appveyor/#testing-with-tox
-                sub('py\d\d', 'py', toxenv)
+                sub('py\\d\\d', 'py', toxenv)
                 for toxenv in env['TOXENV'].split(',')
             )
 

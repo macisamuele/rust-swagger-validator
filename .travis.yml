@@ -20,18 +20,56 @@ env:
 matrix:
   fast_finish: true
   include:
+  - os: linux
+    env: TOXENV=lint
+    python: '3.6'
+  - os: linux
+    env: TOXENV=coverage
+    python: '3.6'
+    sudo: required
+    addons:
+      apt:
+        packages:
+        - libcurl4-openssl-dev
+        - libelf-dev
+        - libdw-dev
+        - cmake
+        - gcc
+        - binutils-dev
+        - libiberty-dev
+  - os: linux
+    env: TOXENV=cargo_test,py27,py27-wheel
+    python: '2.7'
   - os: osx
     env: TOXENV=cargo_test,py27,py27-wheel PYTHON=2.7.15
     language: generic
+  - os: windows
+    env: TOXENV=cargo_test,py,py-wheel
+  - os: linux
+    env: TOXENV=cargo_test,py35,py35-wheel
+    python: '3.5'
   - os: osx
     env: TOXENV=cargo_test,py35,py35-wheel PYTHON=3.5.6
     language: generic
+  - os: windows
+    env: TOXENV=cargo_test,py,py-wheel
+  - os: linux
+    env: TOXENV=cargo_test,py36,py36-wheel
+    python: '3.6'
   - os: osx
     env: TOXENV=cargo_test,py36,py36-wheel PYTHON=3.6.6
     language: generic
+  - os: windows
+    env: TOXENV=cargo_test,py,py-wheel
+  - os: linux
+    env: TOXENV=cargo_test,py37,py37-wheel
+    python: '3.7'
+    sudo: required
   - os: osx
     env: TOXENV=cargo_test,py37,py37-wheel PYTHON=3.7.0
     language: generic
+  - os: windows
+    env: TOXENV=cargo_test,py,py-wheel
 
 install:
 - |
