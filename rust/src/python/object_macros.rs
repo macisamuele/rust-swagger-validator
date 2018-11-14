@@ -25,6 +25,7 @@ macro_rules! initialize_python_object {
     //          }
     //      }
     ($py:expr, $cls:expr, $init_block:expr) => {{
+        #[allow(unsafe_code)]
         unsafe {
             let obj = PyRawObject::new($py, $cls.as_type_ptr(), $cls.as_type_ptr())?;
             let _ = obj.init($init_block);

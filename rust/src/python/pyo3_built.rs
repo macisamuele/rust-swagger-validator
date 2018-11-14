@@ -5,6 +5,8 @@
 macro_rules! pyo3_built {
     ($py: ident) => {{
         extern crate chrono;
+        use pyo3::types::PyString;
+
         #[allow(dead_code)]  // this is used to remove the warnings related to un-used constants in built.rs
         mod build {
             include!(concat!(env!("OUT_DIR"), "/built.rs"));
@@ -41,6 +43,7 @@ macro_rules! pyo3_built {
             deps.set_item(name, version)?;
         }
         info.set_item("dependencies", deps)?;
+
 
         // Features
         let features = build::FEATURES

@@ -4,8 +4,12 @@
     allow(clippy::cast_ptr_alignment, clippy::transmute_ptr_to_ptr)
 )]
 
+use pyo3::exceptions::NotImplementedError;
+use pyo3::exceptions::ValueError;
 use pyo3::prelude::*;
-use pyo3::PyDict;
+use pyo3::types::PyDict;
+use pyo3::types::PyType;
+use pyo3::IntoPyPointer;
 use pyo3::PyRawObject;
 use swagger_schema::SwaggerSchema as RustSwaggerSchema;
 use swagger_schema::SwaggerSchemaError as RustSwaggerSchemaError;
@@ -67,7 +71,7 @@ impl RustSwaggerSpec {
         follow_references: bool,
     ) -> PyResult<PyObject> {
         if follow_references {
-            let err = PyErr::new::<exc::NotImplementedError, _>(
+            let err = PyErr::new::<NotImplementedError, _>(
                 "follow_references is not implemented yet".to_string(),
             );
             return Err(err);
@@ -93,7 +97,7 @@ impl RustSwaggerSpec {
 impl From<RustSwaggerSchemaError> for PyErr {
     fn from(err: RustSwaggerSchemaError) -> Self {
         // TODO: make this more descriptive and extracting a credible exception
-        Self::new::<exc::ValueError, _>(format!("{:?}", err))
+        Self::new::<ValueError, _>(format!("{:?}", err))
     }
 }
 
