@@ -7,7 +7,7 @@ exclude_lines =
 	if __name__ == .__main__.:
 	pragma: no cover
 	pass
-fail_under = 100
+fail_under = 1.00
 show_missing = True
 skip_covered = True
 precision = 2

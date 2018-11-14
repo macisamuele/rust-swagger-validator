@@ -283,6 +283,7 @@ fn test_load_from_url_with_syntattically_invalid_url() {
 }
 
 #[test]
+#[ignore]
 fn test_load_from_url_with_timeout_unfetchable_url() {
     panic_with_expected_loader_error!(
         load_from_url_with_timeout("scheme://not-existing-url.local", 200, None),
