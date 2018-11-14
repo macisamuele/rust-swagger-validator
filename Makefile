@@ -4,10 +4,6 @@ define check_env_variable
 $(if $(strip $($1)),,$(error "$1" ENV VARIABLE IS REQUIRED!))
 endef
 
-ifndef PRE_COMMIT_BIN
-    PRE_COMMIT_BIN := ./venv/bin/pre-commit
-endif
-
 ifndef EDITOR
 	ifneq ("$(wildcard /etc/alternatives/editor)","")
 		EDITOR := /etc/alternatives/editor
@@ -21,12 +17,9 @@ venv: requirements-dev.txt setup.cfg setup.py ${PYTHON_MODULE_ROOT}/__init__.py
 	rm -rf venv/  # Ensure that venv does not exist
 	tox -e venv
 
-${PRE_COMMIT_BIN}: venv
-	@true
-
 .PHONY: development
-development: venv ${PRE_COMMIT_BIN}
-	${PRE_COMMIT_BIN} install --install-hooks
+development: venv
+	./venv/bin/pre-commit install --install-hooks
 
 .PHONY: test
 test:
@@ -38,10 +31,8 @@ clean:
 	find -name *.pyc -delete
 
 .PHONY: lint
-lint: ${PRE_COMMIT_BIN}
-	${PRE_COMMIT_BIN} run --all-files
-	touch rust/src/lib.rs   # touch a file of the rust project to "force" cargo to recompile it so clippy will actually run
-	cargo +nightly clippy --lib --all-features -- -D clippy::pedantic -D clippy::nursery
+lint:
+	tox -e lint
 
 .PHONY: release
 release: clean venv
