@@ -21,7 +21,7 @@ mod object_macros;
 
 #[pyfunction]
 pub fn convert_string(a: i64) -> String {
-    format!("{}", a).to_string()
+    format!("{}", a)
 }
 
 #[pyfunction]
