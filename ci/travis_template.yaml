@@ -29,29 +29,24 @@ install:
       echo brew install ccache > /dev/stderr
       time brew install ccache
     fi
+
     export PATH="${BREW_HOME}/opt/ccache/libexec:${PATH}"
     if ! find ${BREW_HOME}/Cellar/pyenv/*/bin/pyenv -quit; then
       echo brew install pyenv > /dev/stderr
       time brew install pyenv
     fi
-    if ! find ${BREW_HOME}/Cellar/pyenv-virtualenv/*/bin/pyenv-virtualenv -quit; then
-      echo brew install pyenv-virtualenv > /dev/stderr
-      time brew install pyenv-virtualenv
-    fi
-    # Ensure that the required python version is installed, if not going to install it
+
+    # Ensure that the required python version is installed and install it if missing
     if ! pyenv versions --bare | grep -q "^${PYTHON}\$"; then
       # According to pyenv homebrew recommendations (https://github.com/yyuu/pyenv/wiki#suggested-build-environment)
-      echo brew install openssl readline sqlite3 xz zlib > /dev/stderr
       time brew install openssl readline sqlite3 xz zlib
-      echo pyenv install ${PYTHON} > /dev/stderr
       time pyenv install ${PYTHON}
+      # Register pyenv
+      pyenv local ${PYTHON}
     fi
+    export PYTHON=${PYTHON}
     export PYENV_VERSION=${PYTHON}
     export PATH="${HOME}/.pyenv/shims:${PATH}"
-    echo pyenv-virtualenv venv > /dev/stderr
-    pyenv-virtualenv venv
-    source venv/bin/activate
-    python --version
   fi
 - pip install codecov tox-pip-extensions wheel
 - |
