@@ -27,14 +27,8 @@ environment:
   # SET CARGO_EXTRA_ARGS: --verbose
   # SET PIP_EXTRA_ARGS: --verbose
   matrix:
-  - PYTHON: C:\Python27-x64
-    TOXENV: cargo_test,py,py-wheel
-  - PYTHON: C:\Python35-x64
-    TOXENV: cargo_test,py,py-wheel
   - PYTHON: C:\Python36-x64
-    TOXENV: cargo_test,py,py-wheel
-  - PYTHON: C:\Python37-x64
-    TOXENV: cargo_test,py,py-wheel
+    TOXENV: cargo_test
 
 build: off
 
