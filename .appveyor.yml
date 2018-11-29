@@ -28,13 +28,7 @@ environment:
   # SET PIP_EXTRA_ARGS: --verbose
   matrix:
   - PYTHON: C:\Python27-x64
-    TOXENV: cargo_test,py,py-wheel
-  - PYTHON: C:\Python35-x64
-    TOXENV: cargo_test,py,py-wheel
-  - PYTHON: C:\Python36-x64
-    TOXENV: cargo_test,py,py-wheel
-  - PYTHON: C:\Python37-x64
-    TOXENV: cargo_test,py,py-wheel
+    TOXENV: aaa
 
 build: off
 
@@ -109,5 +103,5 @@ on_finish:
 init:
 - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 # # Uncomment the lines below to allow debuggins via Remote desktop
-# on_failure:
-# - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+on_failure:
+- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
