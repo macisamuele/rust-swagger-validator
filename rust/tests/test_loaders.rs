@@ -6,7 +6,7 @@
     unused_extern_crates,
     unused_import_braces,
     unused_results,
-    unused_qualifications,
+    unused_qualifications
 )]
 
 extern crate url;
@@ -157,7 +157,8 @@ fn test_load_from_path_json_format_valid_json() {
     let json_value = load_from_path(
         "test-data/json-files-loaders-tests/valid.json",
         Option::from(Format::JSON),
-    ).unwrap();
+    )
+    .unwrap();
 
     let json_string = json_value.get("key").unwrap();
     assert_eq!(json_string.as_str().unwrap(), "value");
@@ -168,7 +169,8 @@ fn test_load_from_path_yaml_format_valid_yaml() {
     let yaml_value = load_from_path(
         "test-data/yaml-files-loaders-tests/valid.yaml",
         Option::from(Format::YAML),
-    ).unwrap();
+    )
+    .unwrap();
 
     let yaml_string = yaml_value.get("key").unwrap();
     assert_eq!(yaml_string.as_str().unwrap(), "value");

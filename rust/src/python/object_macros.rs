@@ -6,7 +6,7 @@
     unused_extern_crates,
     unused_import_braces,
     unused_results,
-    unused_qualifications,
+    unused_qualifications
 )]
 
 macro_rules! initialize_python_object {
