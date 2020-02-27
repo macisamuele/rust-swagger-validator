@@ -82,7 +82,7 @@ pub trait Loader {
             // Using unwrap as we do assume that the url is valid
             self.load_from_path(url.to_file_path().unwrap().to_str().unwrap())
         } else {
-            let mut client_builder = reqwest::Client::builder();
+            let client_builder = reqwest::Client::builder();
             let client = client_builder
                 .gzip(true)
                 .timeout(Duration::from_millis(timeout_ms))

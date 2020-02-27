@@ -28,17 +28,17 @@ path = "rust/tests/luncher.rs"
 name = "rust_swagger_validator_tests"
 
 [build-dependencies]
-built = "^0.3"
+built = "0.3.0"
 
 [dependencies]
-chrono = {version = "^0.4", optional = true}  # Optional dependency as required only during python bindings
-reqwest = "^0.8.6"
-serde_json = "^1"
-serde_yaml = "^0.7.5"
-url = "^1.7.1"
-valico = "^2.1.0"
+chrono = { version = "0.4.6", optional = true }  # Optional dependency as required only during python bindings
+reqwest = "0.9.14"
+serde_json = "1.0.39"
+serde_yaml = "0.8.8"
+url = "1.7.2"
+valico = "3.0.0"
 
 [dependencies.pyo3]
-version = "^0.4.1"
+version = "0.6.0"
 features = ["extension-module"]
 optional = true
